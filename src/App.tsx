@@ -13,6 +13,8 @@ import ReservationsPage from "./pages/admin/ReservationsPage";
 import InventoryPage from "./pages/admin/InventoryPage";
 import NotFound from "./pages/NotFound";
 
+import CreateReservationPage from "./pages/CreateReservationPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -24,6 +26,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/menu" element={<MenuPage />} />
+          <Route path="/reservar" element={<CreateReservationPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<DashboardPage />} />
