@@ -12,6 +12,7 @@ import UsersPage from "./pages/admin/UsersPage";
 import ReservationsPage from "./pages/admin/ReservationsPage";
 import InventoryPage from "./pages/admin/InventoryPage";
 import NotFound from "./pages/NotFound";
+import CocinaPage from "./pages/CocinaPage";
 
 import CreateReservationPage from "./pages/CreateReservationPage";
 
@@ -24,6 +25,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/cocina" element={<CocinaPage />} />
           <Route path="/" element={<Index />} />
           <Route path="/menu" element={<MenuPage />} />
           <Route path="/reservar" element={<CreateReservationPage />} />

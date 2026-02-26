@@ -3,7 +3,6 @@ import { UtensilsCrossed } from "lucide-react";
 
 const navItems = [
   { label: "Home", path: "/" },
-  { label: "Tablet", path: "/menu" },
   { label: "Cocina", path: "/cocina" },
   { label: "Admin", path: "/admin" },
 ];
