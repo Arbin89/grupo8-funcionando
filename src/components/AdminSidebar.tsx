@@ -23,7 +23,7 @@ const sidebarSections = [
       { label: "Usuarios", icon: Users, path: "/admin/usuarios" },
       { label: "Reservaciones", icon: CalendarCheck, path: "/admin/reservaciones" },
       { label: "Inventario", icon: Package, path: "/admin/inventario" },
-      { label: "Cocina", icon: ChefHat, path: "/admin/cocina" },
+      { label: "Cocina", icon: ChefHat, path: "/cocina" },
     ],
   },
   {
