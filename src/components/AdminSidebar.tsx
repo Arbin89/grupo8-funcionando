@@ -29,7 +29,7 @@ const sidebarSections = [
   {
     title: "REPORTES",
     items: [
-      { label: "Reportes", icon: FileBarChart, path: "/admin/reportes" },
+      { label: "Reportes", icon: FileBarChart, path: "/admin/reporta" },
     ],
   },
 ];
