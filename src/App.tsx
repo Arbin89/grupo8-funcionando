@@ -13,8 +13,9 @@ import ReservationsPage from "./pages/admin/ReservationsPage";
 import InventoryPage from "./pages/admin/InventoryPage";
 import NotFound from "./pages/NotFound";
 import CocinaPage from "./pages/CocinaPage";
-import ReportesPage from "./pages/ReportesPage";
 import CreateReservationPage from "./pages/CreateReservationPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ReportesPage from "./pages/ReportesPage";
 import ReportA from "./pages/admin/ReportA";
 
 const queryClient = new QueryClient();
@@ -32,13 +33,22 @@ const App = () => (
           <Route path="/reservar" element={<CreateReservationPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/reportes" element={<ReportesPage />} />
-          <Route path="/admin" element={<AdminLayout />}>
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<DashboardPage />} />
             <Route path="usuarios" element={<UsersPage />} />
             <Route path="reservaciones" element={<ReservationsPage />} />
             <Route path="inventario" element={<InventoryPage />} />
             <Route path="reporta" element={<ReportA />} />
           </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

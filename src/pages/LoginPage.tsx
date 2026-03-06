@@ -1,17 +1,56 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { UtensilsCrossed } from "lucide-react";
+import { loginUser } from "../services/authService";
 
 const LoginPage = () => {
+  // Guarda el usuario escrito
   const [usuario, setUsuario] = useState("");
+
+  // Guarda la contraseña escrita
   const [contrasena, setContrasena] = useState("");
+
+  // Guarda mensaje de error
+  const [error, setError] = useState("");
+
+  // Indica si el login está procesando
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Si ya hay token, manda al admin
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      navigate("/admin");
+    }
+  }, [navigate]);
+
+  // Maneja el envío del formulario
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Frontend only - navigate to admin
-    navigate("/admin");
+
+    setError("");
+    setLoading(true);
+
+    try {
+      // Llama al backend con usuario y contraseña
+      const data = await loginUser(usuario, contrasena);
+
+      // Guarda token y usuario en localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Redirige al admin si el login fue exitoso
+      navigate("/admin");
+    } catch (err: any) {
+      // Muestra error si el backend rechazó el login
+      setError(err.message || "No se pudo iniciar sesión");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -24,7 +63,9 @@ const LoginPage = () => {
               <UtensilsCrossed className="w-6 h-6 text-primary" />
               <h2 className="text-xl font-bold text-primary">Iniciar Sesión</h2>
             </div>
-            <p className="text-sm text-muted-foreground">Sistema de Gestión de Restaurante</p>
+            <p className="text-sm text-muted-foreground">
+              Sistema de Gestión de Restaurante
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -37,8 +78,11 @@ const LoginPage = () => {
                 className="w-full border border-input rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-semibold mb-1">Contraseña</label>
+              <label className="block text-sm font-semibold mb-1">
+                Contraseña
+              </label>
               <input
                 type="password"
                 value={contrasena}
@@ -46,11 +90,19 @@ const LoginPage = () => {
                 className="w-full border border-input rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
+
+            {error && (
+              <div className="bg-red-100 border border-red-300 text-red-700 text-sm rounded-lg px-3 py-2">
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full bg-foreground text-background py-2.5 rounded-lg font-semibold hover:opacity-90 transition"
+              disabled={loading}
+              className="w-full bg-foreground text-background py-2.5 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-60"
             >
-              Ingresar
+              {loading ? "Ingresando..." : "Ingresar"}
             </button>
           </form>
 
@@ -62,6 +114,7 @@ const LoginPage = () => {
           </div>
         </div>
       </main>
+
       <footer className="py-4 text-center text-xs bg-foreground text-background">
         © 2026 SIGER - Sistema de Gestión de Restaurante
       </footer>
