@@ -22,7 +22,11 @@ const activities = [
   { title: "Nuevo pedido", desc: "Orden #5846 fue creada", time: "Hace 2 horas", emoji: "🛒" },
 ];
 
+
+import { useNavigate } from "react-router-dom";
+
 const DashboardPage = () => {
+  const navigate = useNavigate();
   return (
     <div className="space-y-6">
       <div>
@@ -54,6 +58,9 @@ const DashboardPage = () => {
             <button
               key={a.label}
               className={`bg-gradient-to-r ${a.color} text-primary-foreground py-3 rounded-lg font-semibold hover:opacity-90 transition text-sm`}
+              onClick={() => {
+                if (a.label === "Cocina") navigate("/cocina");
+              }}
             >
               {a.label}
             </button>
