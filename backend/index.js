@@ -6,6 +6,7 @@ const reservationRoutes = require("./routes/reservationRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const menuRoutes = require("./routes/menuRoutes");
 const reportRoutes = require("./routes/reportRoutes");
+const kitchenRoutes = require("./routes/kitchenRoutes");
 // Importamos las rutas
 const authRoutes = require("./routes/authRoutes");
 
@@ -37,6 +38,7 @@ app.use("/reservations", reservationRoutes);
 app.use("/inventory", inventoryRoutes);
 app.use("/menu", menuRoutes);
 app.use("/reports", reportRoutes);
+app.use("/kitchen", kitchenRoutes);
 
 // Iniciamos el servidor
 app.listen(3000, () => {
