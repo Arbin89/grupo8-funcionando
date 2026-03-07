@@ -84,3 +84,30 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- =========================
+-- TABLA DE MENÚ
+-- =========================
+CREATE TABLE IF NOT EXISTS menu_items (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT DEFAULT '',
+    price NUMERIC(10,2) NOT NULL CHECK (price >= 0),
+    category VARCHAR(50) NOT NULL DEFAULT 'General',
+    emoji VARCHAR(10) DEFAULT '🍽️',
+    available BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
+-- TABLA DE REPORTES DE USUARIOS
+-- =========================
+CREATE TABLE IF NOT EXISTS reports (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    type VARCHAR(50) NOT NULL DEFAULT 'Otro',
+    description TEXT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pendiente' CHECK (status IN ('pendiente', 'revisado', 'resuelto')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
