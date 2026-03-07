@@ -11,6 +11,8 @@ import DashboardPage from "./pages/admin/DashboardPage";
 import UsersPage from "./pages/admin/UsersPage";
 import ReservationsPage from "./pages/admin/ReservationsPage";
 import InventoryPage from "./pages/admin/InventoryPage";
+import MenuAdminPage from "./pages/admin/MenuAdminPage";
+import ReportesAdminPage from "./pages/admin/ReportesAdminPage";
 import NotFound from "./pages/NotFound";
 import CocinaPage from "./pages/CocinaPage";
 import CreateReservationPage from "./pages/CreateReservationPage";
@@ -46,6 +48,8 @@ const App = () => (
             <Route path="usuarios" element={<UsersPage />} />
             <Route path="reservaciones" element={<ReservationsPage />} />
             <Route path="inventario" element={<InventoryPage />} />
+            <Route path="menu" element={<MenuAdminPage />} />
+            <Route path="reportes" element={<ReportesAdminPage />} />
             <Route path="reporta" element={<ReportA />} />
           </Route>
 
