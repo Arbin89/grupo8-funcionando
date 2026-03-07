@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "backend": "node backend/index.js",
+    "backend": "cd backend && node index.js",
     "db": "docker-compose up -d",
     "start": "docker-compose up -d && concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"npm run backend\" \"npm run dev\""
   },
