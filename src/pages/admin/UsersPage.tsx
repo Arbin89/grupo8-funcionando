@@ -42,8 +42,8 @@ const UsersPage = () => {
       setError("");
       const data = await getUsers();
       setUsers(data);
-    } catch (err: any) {
-      setError(err.message || "Error al cargar usuarios");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al cargar usuarios");
     } finally {
       setLoading(false);
     }
@@ -164,8 +164,8 @@ const UsersPage = () => {
 
       await fetchUsers();
       resetForm();
-    } catch (err: any) {
-      setError(err.message || "Error al guardar usuario");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al guardar usuario");
     }
   };
 
@@ -181,8 +181,8 @@ const UsersPage = () => {
       setError("");
       await deleteUser(id);
       await fetchUsers();
-    } catch (err: any) {
-      setError(err.message || "Error al eliminar usuario");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al eliminar usuario");
     }
   };
 
