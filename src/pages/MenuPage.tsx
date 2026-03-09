@@ -146,7 +146,7 @@ const MenuPage = () => {
                   <div className="relative w-full h-52 overflow-hidden">
                     <img src={getImage(item)} alt={item.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = CATEGORY_FALLBACK[item.category] ?? CATEGORY_FALLBACK["General"]; }}
+                      onError={(e) => { e.currentTarget.onerror = null; (e.currentTarget as HTMLImageElement).src = CATEGORY_FALLBACK[item.category] ?? CATEGORY_FALLBACK["General"]; }}
                     />
                     <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold shadow ${CATEGORY_COLORS[item.category] ?? "bg-gray-100 text-gray-700"}`}>
                       {item.category}
@@ -215,7 +215,7 @@ const MenuPage = () => {
                     src={c.image_url}
                     alt={c.name}
                     className="w-14 h-14 rounded-xl object-cover flex-shrink-0 shadow-sm"
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).src = CATEGORY_FALLBACK["General"]; }}
+                    onError={(e) => { e.currentTarget.onerror = null; (e.currentTarget as HTMLImageElement).src = CATEGORY_FALLBACK["General"]; }}
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate">{c.name}</p>

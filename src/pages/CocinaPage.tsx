@@ -175,7 +175,7 @@ const CocinaPage = () => {
                           src={item.item_image_url || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=100&h=100&fit=crop"}
                           alt={item.item_name}
                           className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                          onError={(e) => { (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=100&h=100&fit=crop"; }}
+                          onError={(e) => { e.currentTarget.onerror = null; (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=100&h=100&fit=crop"; }}
                         />
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{item.item_name}</p>
