@@ -95,6 +95,7 @@ CREATE TABLE IF NOT EXISTS menu_items (
     price NUMERIC(10,2) NOT NULL CHECK (price >= 0),
     category VARCHAR(50) NOT NULL DEFAULT 'General',
     emoji VARCHAR(10) DEFAULT '🍽️',
+    image_url TEXT DEFAULT '',
     available BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

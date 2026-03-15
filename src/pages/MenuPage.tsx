@@ -26,6 +26,8 @@ const MenuPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeCategory, setActiveCategory] = useState("Todos");
+  const [priceSort, setPriceSort] = useState<"asc" | "desc" | null>(null);
+  const [hoveredItemId, setHoveredItemId] = useState<number | null>(null);
 
   // Carrito
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -34,6 +36,7 @@ const MenuPage = () => {
   const [notes, setNotes] = useState("");
   const [ordering, setOrdering] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   useEffect(() => {
     getMenuItems()
@@ -43,7 +46,14 @@ const MenuPage = () => {
   }, []);
 
   const activeCategories = ["Todos", ...Array.from(new Set(items.map((i) => i.category)))];
-  const filtered = activeCategory === "Todos" ? items : items.filter((i) => i.category === activeCategory);
+  let filtered = activeCategory === "Todos" ? items : items.filter((i) => i.category === activeCategory);
+  
+  // Aplicar ordenamiento por precio
+  if (priceSort === "asc") {
+    filtered = [...filtered].sort((a, b) => Number(a.price) - Number(b.price));
+  } else if (priceSort === "desc") {
+    filtered = [...filtered].sort((a, b) => Number(b.price) - Number(a.price));
+  }
 
   const getImage = (item: MenuItem) =>
     item.image_url?.trim()
@@ -83,6 +93,7 @@ const MenuPage = () => {
   const handleOrder = async () => {
     if (cart.length === 0) return;
     setOrdering(true);
+    setOrderError(null);
     try {
       const order = await createOrder({
         items: cart.map((c) => ({ name: c.name, emoji: c.emoji, image_url: c.image_url, price: c.price, quantity: c.quantity })),
@@ -95,7 +106,7 @@ const MenuPage = () => {
       setTableNumber("");
       setOrderSuccess(order.order_number);
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : "Error al enviar la orden");
+      setOrderError(e instanceof Error ? e.message : "Error al enviar la orden");
     } finally {
       setOrdering(false);
     }
@@ -113,16 +124,44 @@ const MenuPage = () => {
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-10">
 
-        {/* Filtros */}
-        <div className="flex justify-center gap-2 mb-10 flex-wrap">
+        {/* Filtros de categoría */}
+        <div className="flex justify-center gap-2 mb-6 flex-wrap">
           {activeCategories.map((cat) => (
-            <button key={cat} onClick={() => setActiveCategory(cat)}
+            <button key={cat} onClick={() => { setActiveCategory(cat); setPriceSort(null); }}
               className={`px-5 py-2 rounded-full text-sm font-semibold border transition-all duration-200 shadow-sm ${activeCategory === cat
                 ? "bg-gray-900 text-white border-gray-900 scale-105"
                 : "bg-white text-gray-700 border-gray-200 hover:border-gray-400 hover:shadow"
                 }`}
             >{cat}</button>
           ))}
+        </div>
+
+        {/* Filtro de precios */}
+        <div className="flex justify-center gap-3 mb-8">
+          <button onClick={() => setPriceSort(null)}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${priceSort === null
+              ? "bg-blue-600 text-white shadow-lg scale-105"
+              : "bg-white text-gray-700 border border-gray-200 hover:border-blue-400"
+            }`}
+          >
+            Precio: Predeterminado
+          </button>
+          <button onClick={() => setPriceSort("asc")}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${priceSort === "asc"
+              ? "bg-green-600 text-white shadow-lg scale-105"
+              : "bg-white text-gray-700 border border-gray-200 hover:border-green-400"
+            }`}
+          >
+            ↑ Menor a Mayor
+          </button>
+          <button onClick={() => setPriceSort("desc")}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${priceSort === "desc"
+              ? "bg-red-600 text-white shadow-lg scale-105"
+              : "bg-white text-gray-700 border border-gray-200 hover:border-red-400"
+            }`}
+          >
+            ↓ Mayor a Menor
+          </button>
         </div>
 
         {loading ? (
@@ -135,46 +174,99 @@ const MenuPage = () => {
         ) : filtered.length === 0 ? (
           <p className="text-center text-gray-400 py-20">No hay platos disponibles en esta categoría.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filtered.map((item) => {
-              const inCart = cart.find((c) => c.id === item.id);
-              return (
-                <div key={item.id}
-                  className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col group"
-                >
-                  {/* Imagen */}
-                  <div className="relative w-full h-52 overflow-hidden">
-                    <img src={getImage(item)} alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => { e.currentTarget.onerror = null; (e.currentTarget as HTMLImageElement).src = CATEGORY_FALLBACK[item.category] ?? CATEGORY_FALLBACK["General"]; }}
-                    />
-                    <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold shadow ${CATEGORY_COLORS[item.category] ?? "bg-gray-100 text-gray-700"}`}>
-                      {item.category}
-                    </span>
-                    {inCart && (
-                      <span className="absolute top-3 right-3 bg-gray-900 text-white text-xs font-bold px-2 py-1 rounded-full">
-                        ×{inCart.quantity}
+          <div className="relative">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filtered.map((item) => {
+                const inCart = cart.find((c) => c.id === item.id);
+                const isHovered = hoveredItemId === item.id;
+                return (
+                  <div key={item.id}
+                    onMouseEnter={() => setHoveredItemId(item.id)}
+                    onMouseLeave={() => setHoveredItemId(null)}
+                    className={`bg-white rounded-2xl overflow-hidden flex flex-col group transition-all duration-300 transform cursor-pointer ${
+                      isHovered
+                        ? "shadow-2xl scale-105"
+                        : "shadow-md hover:shadow-xl"
+                    }`}
+                  >
+                    {/* Imagen */}
+                    <div className="relative w-full h-52 overflow-hidden">
+                      <img src={getImage(item)} alt={item.name}
+                        className={`w-full h-full object-cover transition-transform duration-500 ${
+                          isHovered ? "scale-110" : "scale-100"
+                        }`}
+                        onError={(e) => { e.currentTarget.onerror = null; (e.currentTarget as HTMLImageElement).src = CATEGORY_FALLBACK[item.category] ?? CATEGORY_FALLBACK["General"]; }}
+                      />
+                      <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold shadow transition-all ${CATEGORY_COLORS[item.category] ?? "bg-gray-100 text-gray-700"}`}>
+                        {item.category}
                       </span>
-                    )}
-                  </div>
-                  {/* Contenido */}
-                  <div className="flex flex-col flex-1 p-5">
-                    <h3 className="font-bold text-gray-900 text-lg mb-1 leading-tight">{item.name}</h3>
-                    <p className="text-sm text-gray-500 flex-1 mb-4 line-clamp-2">{item.description}</p>
-                    <div className="flex items-center justify-between mt-auto">
-                      <span className="text-2xl font-extrabold text-gray-900">
-                        ${Number(item.price).toFixed(2)}
-                      </span>
-                      <button onClick={() => addToCart(item)}
-                        className="bg-gray-900 text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-gray-700 active:scale-95 transition-all duration-200"
-                      >
-                        {inCart ? `Agregar más +` : "Agregar +"}
-                      </button>
+                      {inCart && (
+                        <span className="absolute top-3 right-3 bg-gray-900 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+                          ×{inCart.quantity}
+                        </span>
+                      )}
+                    </div>
+                    {/* Contenido */}
+                    <div className="flex flex-col flex-1 p-5">
+                      <h3 className="font-bold text-gray-900 text-lg mb-1 leading-tight">{item.name}</h3>
+                      <p className="text-sm text-gray-500 flex-1 mb-4 line-clamp-2">{item.description}</p>
+                      <div className="flex items-center justify-between mt-auto gap-3">
+                        <span className={`text-2xl font-extrabold transition-all duration-300 ${
+                          isHovered ? "text-blue-600 scale-110" : "text-gray-900"
+                        }`}>
+                          ${Number(item.price).toFixed(2)}
+                        </span>
+                        <button onClick={() => addToCart(item)}
+                          className={`text-sm font-semibold px-5 py-2 rounded-full transition-all duration-300 transform ${
+                            isHovered
+                              ? "bg-blue-600 text-white shadow-lg scale-110 hover:bg-blue-700"
+                              : "bg-gray-900 text-white hover:bg-gray-700 active:scale-95"
+                          }`}
+                        >
+                          {inCart ? `Más +` : "Agregar +"}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+            
+            {/* Preview Popover */}
+            {hoveredItemId && (
+              <div className="fixed pointer-events-none z-50">
+                {filtered.map((item) => {
+                  if (item.id !== hoveredItemId) return null;
+                  return (
+                    <div key={`preview-${item.id}`} className="animate-fade-in">
+                      <div className="absolute top-1/2 left-1/2 transform -translate-y-1/2 ml-4 bg-white rounded-3xl shadow-2xl overflow-hidden w-80 pointer-events-auto">
+                        {/* Imagen grande */}
+                        <div className="relative w-full h-64 overflow-hidden">
+                          <img src={getImage(item)} alt={item.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => { e.currentTarget.onerror = null; (e.currentTarget as HTMLImageElement).src = CATEGORY_FALLBACK[item.category] ?? CATEGORY_FALLBACK["General"]; }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                          <span className="absolute bottom-3 left-3 text-4xl">{item.emoji}</span>
+                        </div>
+                        
+                        {/* Info */}
+                        <div className="p-5 space-y-3">
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-lg">{item.name}</h4>
+                            <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                          </div>
+                          <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                            <span className="text-2xl font-extrabold text-blue-600">${Number(item.price).toFixed(2)}</span>
+                            <span className="text-xs font-semibold text-gray-500">{item.category}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </main>
@@ -255,6 +347,11 @@ const MenuPage = () => {
                 rows={2}
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 resize-none"
               />
+              {orderError && (
+                <div className="bg-red-100 border border-red-300 text-red-700 text-sm rounded-lg px-3 py-2">
+                  {orderError}
+                </div>
+              )}
               <div className="flex justify-between text-sm font-semibold border-t pt-2">
                 <span>Total ({cartCount} items)</span>
                 <span className="text-xl font-extrabold text-gray-900">${cartTotal.toFixed(2)}</span>
@@ -296,7 +393,12 @@ const MenuPage = () => {
           from { transform: translateX(100%); }
           to { transform: translateX(0); }
         }
+        @keyframes fade-in {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
         .animate-slide-in { animation: slide-in 0.25s ease-out; }
+        .animate-fade-in { animation: fade-in 0.3s ease-out; }
       `}</style>
     </div>
   );
