@@ -3,6 +3,7 @@ const cors = require("cors");
 const pool = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
+const inventoryRoutes = require("./routes/inventoryRoutes");
 // Importamos las rutas
 const authRoutes = require("./routes/authRoutes");
 
@@ -30,7 +31,8 @@ app.get("/", async (req, res) => {
 // Rutas de autenticación
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
-app.use("/reservations", reservationRoutes);  
+app.use("/reservations", reservationRoutes);
+app.use("/inventory", inventoryRoutes);
 
 // Iniciamos el servidor
 app.listen(3000, () => {
