@@ -22,7 +22,11 @@ const activities = [
   { title: "Nuevo pedido", desc: "Orden #5846 fue creada", time: "Hace 2 horas", emoji: "🛒" },
 ];
 
+
+import { useNavigate } from "react-router-dom";
+
 const DashboardPage = () => {
+  const navigate = useNavigate();
   return (
     <div className="space-y-6">
       <div>
@@ -50,14 +54,34 @@ const DashboardPage = () => {
       <div className="bg-card rounded-xl p-6 shadow-sm">
         <h2 className="text-lg font-bold mb-4">Accesos Rápidos</h2>
         <div className="grid grid-cols-4 gap-4">
-          {quickActions.map((a) => (
-            <button
-              key={a.label}
-              className={`bg-gradient-to-r ${a.color} text-primary-foreground py-3 rounded-lg font-semibold hover:opacity-90 transition text-sm`}
-            >
-              {a.label}
-            </button>
-          ))}
+          {quickActions.map((a) => {
+            let path = "";
+            switch (a.label) {
+              case "Gestionar Usuarios":
+                path = "/admin/usuarios";
+                break;
+              case "Ver Reservaciones":
+                path = "/admin/reservaciones";
+                break;
+              case "Inventario":
+                path = "/admin/inventario";
+                break;
+              case "Cocina":
+                path = "/cocina";
+                break;
+              default:
+                path = "/admin";
+            }
+            return (
+              <button
+                key={a.label}
+                className={`bg-gradient-to-r ${a.color} text-primary-foreground py-3 rounded-lg font-semibold hover:opacity-90 transition text-sm`}
+                onClick={() => navigate(path)}
+              >
+                {a.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 

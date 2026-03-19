@@ -1,9 +1,11 @@
 import { apiRequest } from "./api";
 
+// ─── Tipos ───────────────────────────────────────
+
 export interface InventoryCategory {
   id: number;
   name: string;
-  created_at?: string;
+  created_at: string;
 }
 
 export interface InventoryItem {
@@ -14,72 +16,52 @@ export interface InventoryItem {
   stock_available: number;
   stock_minimum: number;
   unit_price: number;
-  status: string;
+  status: "activo" | "inactivo";
   created_at: string;
 }
 
-export interface InventoryPayload {
+export type InventoryItemPayload = {
   name: string;
-  category_name: string;
+  category_id: number | null;
   stock_available: number;
   stock_minimum: number;
   unit_price: number;
-  status: string;
-}
-
-const normalizeInventoryItem = (item: any): InventoryItem => ({
-  id: Number(item.id),
-  name: item.name,
-  category_id:
-    item.category_id === null || item.category_id === undefined
-      ? null
-      : Number(item.category_id),
-  category_name: item.category_name ?? null,
-  stock_available: Number(item.stock_available),
-  stock_minimum: Number(item.stock_minimum),
-  unit_price: Number(item.unit_price),
-  status: item.status,
-  created_at: item.created_at,
-});
-
-export const getInventoryItems = async (): Promise<InventoryItem[]> => {
-  const data = await apiRequest("/inventory");
-  return data.map(normalizeInventoryItem);
+  status: "activo" | "inactivo";
 };
 
-export const getInventoryCategories = async (): Promise<InventoryCategory[]> => {
-  return await apiRequest("/inventory/categories");
-};
+// ─── Categorías ──────────────────────────────────
 
-export const createInventoryItem = async (itemData: InventoryPayload) => {
-  const data = await apiRequest("/inventory", {
+export const getCategories = (): Promise<InventoryCategory[]> =>
+  apiRequest("/inventory/categories");
+
+export const createCategory = (name: string): Promise<{ message: string; category: InventoryCategory }> =>
+  apiRequest("/inventory/categories", {
     method: "POST",
-    body: JSON.stringify(itemData),
+    body: JSON.stringify({ name }),
   });
 
-  return {
-    ...data,
-    item: normalizeInventoryItem(data.item),
-  };
-};
+export const deleteCategory = (id: number): Promise<{ message: string }> =>
+  apiRequest(`/inventory/categories/${id}`, { method: "DELETE" });
 
-export const updateInventoryItem = async (
+// ─── Items ───────────────────────────────────────
+
+export const getItems = (): Promise<InventoryItem[]> =>
+  apiRequest("/inventory/items");
+
+export const createItem = (payload: InventoryItemPayload): Promise<{ message: string; item: InventoryItem }> =>
+  apiRequest("/inventory/items", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const updateItem = (
   id: number,
-  itemData: InventoryPayload
-) => {
-  const data = await apiRequest(`/inventory/${id}`, {
+  payload: InventoryItemPayload
+): Promise<{ message: string; item: InventoryItem }> =>
+  apiRequest(`/inventory/items/${id}`, {
     method: "PUT",
-    body: JSON.stringify(itemData),
+    body: JSON.stringify(payload),
   });
 
-  return {
-    ...data,
-    item: normalizeInventoryItem(data.item),
-  };
-};
-
-export const deleteInventoryItem = async (id: number) => {
-  return await apiRequest(`/inventory/${id}`, {
-    method: "DELETE",
-  });
-};
+export const deleteItem = (id: number): Promise<{ message: string }> =>
+  apiRequest(`/inventory/items/${id}`, { method: "DELETE" });

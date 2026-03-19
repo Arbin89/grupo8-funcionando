@@ -9,7 +9,7 @@
     --background: 220 20% 97%;
     --foreground: 267 42% 40%;
     --texthomecolor: 0 0% 0%;
-    --bgreservabtn: 218 84% 50%; 
+    --bgreservabtn: 218 84% 50%;
 
     --card: 0 0% 100%;
     --card-foreground: 224 30% 15%;
@@ -90,9 +90,11 @@
 .stock-good {
   background: hsl(142, 71%, 45%);
 }
+
 .stock-warning {
   background: hsl(38, 92%, 50%);
 }
+
 .stock-danger {
   background: hsl(0, 84%, 60%);
 }

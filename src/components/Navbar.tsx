@@ -5,6 +5,7 @@ const navItems = [
   { label: "Home", path: "/" },
   { label: "Cocina", path: "/cocina" },
   { label: "Admin", path: "/admin" },
+  { label: "Reportar", path: "/reportes"}
 ];
 
 const Navbar = () => {
