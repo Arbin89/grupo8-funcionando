@@ -23,6 +23,33 @@ const emptyForm = (): MenuItemPayload => ({
 });
 
 const MenuAdminPage = () => {
+        // Selección múltiple
+        const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+        const toggleSelect = (id: number) => {
+            setSelectedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+        };
+        const selectAll = () => {
+            setSelectedIds(filtered.map((item) => item.id));
+        };
+        const clearSelected = () => {
+            setSelectedIds([]);
+        };
+        const handleDeleteSelected = async () => {
+            if (selectedIds.length === 0) return;
+            setSaving(true);
+            try {
+                for (const id of selectedIds) {
+                    await deleteMenuItem(id);
+                }
+                clearSelected();
+                load();
+            } catch (e: unknown) {
+                setError(e instanceof Error ? e.message : "Error al eliminar seleccionados");
+            } finally {
+                setSaving(false);
+            }
+        };
     const [items, setItems] = useState<MenuItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -157,7 +184,27 @@ const MenuAdminPage = () => {
 
             {/* Tabla */}
             <div className="bg-card rounded-xl shadow-sm p-6">
-                <h2 className="text-lg font-bold mb-4">Platos ({filtered.length})</h2>
+                <div className="flex items-center mb-4 gap-2">
+                    <h2 className="text-lg font-bold">Platos ({filtered.length})</h2>
+                    {selectedIds.length > 0 && (
+                        <span className="text-sm text-primary font-semibold">{selectedIds.length} seleccionados</span>
+                    )}
+                    <button
+                        className="px-3 py-1 text-xs rounded-lg border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition"
+                        onClick={selectAll}
+                        disabled={filtered.length === 0}
+                    >Seleccionar todos</button>
+                    <button
+                        className="px-3 py-1 text-xs rounded-lg border border-muted text-muted-foreground hover:bg-muted transition"
+                        onClick={clearSelected}
+                        disabled={selectedIds.length === 0}
+                    >Limpiar selección</button>
+                    <button
+                        className="px-3 py-1 text-xs rounded-lg border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground transition"
+                        onClick={handleDeleteSelected}
+                        disabled={selectedIds.length === 0 || saving}
+                    >Eliminar seleccionados</button>
+                </div>
                 {loading ? (
                     <p className="text-muted-foreground text-sm">Cargando...</p>
                 ) : filtered.length === 0 ? (
@@ -167,6 +214,12 @@ const MenuAdminPage = () => {
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b text-left text-muted-foreground">
+                                    <th className="py-2 pr-2 font-semibold">
+                                        <input type="checkbox"
+                                            checked={selectedIds.length === filtered.length && filtered.length > 0}
+                                            onChange={e => e.target.checked ? selectAll() : clearSelected()}
+                                        />
+                                    </th>
                                     <th className="py-2 pr-4 font-semibold">Plato</th>
                                     <th className="py-2 pr-4 font-semibold">Categoría</th>
                                     <th className="py-2 pr-4 font-semibold">Precio</th>
@@ -177,6 +230,12 @@ const MenuAdminPage = () => {
                             <tbody>
                                 {filtered.map((item) => (
                                     <tr key={item.id} className="border-b last:border-0 hover:bg-muted/30 transition">
+                                        <td className="py-3 pr-2">
+                                            <input type="checkbox"
+                                                checked={selectedIds.includes(item.id)}
+                                                onChange={() => toggleSelect(item.id)}
+                                            />
+                                        </td>
                                         <td className="py-3 pr-4">
                                             <div className="flex items-center gap-2">
                                                 <span className="text-2xl">{item.emoji}</span>
