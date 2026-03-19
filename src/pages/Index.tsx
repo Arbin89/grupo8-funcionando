@@ -71,10 +71,10 @@ const Index = () => {
                 Bienvenido a <span className="font-bold">SIGER</span>
               </h2>
               <div className="space-y-6">
-                <p className="text-lg text-gray-800 font-serif font-light leading-relaxed">
+                <p className="text-lg text-gray-800 font-serif font-light leading-relaxed text-justify">
                   En SIGER fusionamos la tradición culinaria con ingredientes frescos y técnicas modernas para ofrecerte una experiencia gastronómica única.
                 </p>
-                <p className="text-lg text-gray-800 font-serif font-light leading-relaxed">
+                <p className="text-lg text-gray-800 font-serif font-light leading-relaxed text-justify">
                   Nuestro menú cuidadosamente seleccionado refleja un compromiso con la calidad, la creatividad y la excelencia en cada plato.
                 </p>
               </div>
@@ -116,17 +116,17 @@ const Index = () => {
               <div className="bg-white p-12 hover:shadow-2xl transition duration-500">
                 <div className="text-6xl mb-6">🍽️</div>
                 <h3 className="text-2xl font-serif font-light mb-4 text-black">Menú Exquisito</h3>
-                <p className="text-gray-600 font-light leading-relaxed">Más de 100 platos cuidadosamente seleccionados con los mejores ingredientes del mercado</p>
+                <p className="text-gray-600 font-light leading-relaxed text-justify">Más de 100 platos cuidadosamente seleccionados con los mejores ingredientes del mercado</p>
               </div>
               <div className="bg-white p-12 hover:shadow-2xl transition duration-500">
                 <div className="text-6xl mb-6">👨‍🍳</div>
                 <h3 className="text-2xl font-serif font-light mb-4 text-black">Chef Experto</h3>
-                <p className="text-gray-600 font-light leading-relaxed">Nuestro equipo de cocineros profesionales prepara cada plato con pasión y precisión</p>
+                <p className="text-gray-600 font-light leading-relaxed text-justify">Nuestro equipo de cocineros profesionales prepara cada plato con pasión y precisión</p>
               </div>
               <div className="bg-white p-12 hover:shadow-2xl transition duration-500">
                 <div className="text-6xl mb-6">⭐</div>
                 <h3 className="text-2xl font-serif font-light mb-4 text-black">Calidad Premium</h3>
-                <p className="text-gray-600 font-light leading-relaxed">Ingredientes frescos y de primera calidad para garantizar una experiencia inolvidable</p>
+                <p className="text-gray-600 font-light leading-relaxed text-justify">Ingredientes frescos y de primera calidad para garantizar una experiencia inolvidable</p>
               </div>
             </div>
           </div>
@@ -191,7 +191,7 @@ const Index = () => {
               <div className="flex flex-col justify-center">
                 <div className="border border-gray-700 p-16">
                   <h3 className="text-4xl font-serif font-light mb-6">Reserva tu Mesa Hoy</h3>
-                  <p className="text-gray-300 mb-12 leading-relaxed font-light">
+                  <p className="text-gray-300 mb-12 leading-relaxed font-light text-justify">
                     Asegura tu lugar en SIGER y disfruta de una experiencia culinaria extraordinaria. Nuestro equipo está listo para recibirte.
                   </p>
                   <div className="space-y-4">
