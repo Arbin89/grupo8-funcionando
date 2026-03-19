@@ -58,7 +58,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
   POST /reservations
   Crea una reserva nueva
 */
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const {
       customer_name,
@@ -101,7 +101,6 @@ router.post("/", authMiddleware, async (req, res) => {
     });
   }
 });
-
 /*
   PUT /reservations/:id
   Actualiza una reserva existente
