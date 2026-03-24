@@ -12,7 +12,7 @@ export interface User {
 
 export const getUsers = async (): Promise<User[]> => {
   return await apiRequest("/users");
-};
+};  
 
 export const createUser = async (userData: {
   name: string;

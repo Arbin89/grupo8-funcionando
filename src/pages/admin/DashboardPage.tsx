@@ -1,4 +1,5 @@
 import { ClipboardList, ShoppingCart, Users, DollarSign } from "lucide-react";
+import ResumenDiaIA from "../../components/resumenDiaIA.tsx";
 
 const stats = [
   { label: "RESERVACIONES", value: "1243", sub: "↑ 28 hoy", icon: ClipboardList, color: "border-primary" },
@@ -82,5 +83,5 @@ const DashboardPage = () => {
     </div>
   );
 };
-
+<ResumenDiaIA />
 export default DashboardPage;

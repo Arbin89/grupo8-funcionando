@@ -4,6 +4,7 @@ const pool = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 // Importamos las rutas
 const authRoutes = require("./routes/authRoutes");
 
@@ -14,6 +15,7 @@ app.use(cors());
 
 // Permite enviar y recibir JSON
 app.use(express.json());
+
 
 // Ruta base para probar que el backend está vivo
 app.get("/", async (req, res) => {
@@ -33,6 +35,7 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/reservations", reservationRoutes);
 app.use("/inventory", inventoryRoutes);
+app.use("/ai", aiRoutes);
 
 // Iniciamos el servidor
 app.listen(3000, () => {
