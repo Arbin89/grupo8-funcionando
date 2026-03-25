@@ -2,10 +2,10 @@ import { Link, useLocation } from "react-router-dom";
 import { UtensilsCrossed } from "lucide-react";
 
 const navItems = [
-  { label: "Home", path: "/" },
+  { label: "Inicio", path: "/" },
   { label: "Cocina", path: "/cocina" },
-  { label: "Admin", path: "/admin" },
-  { label: "Reportar", path: "/reportes"}
+  { label: "Administrador", path: "/admin" },
+  { label: "Reporte", path: "/reportes"}
 ];
 
 const Navbar = () => {
@@ -35,7 +35,7 @@ const Navbar = () => {
           to="/login"
           className="bg-foreground text-primary-foreground text-sm px-5 py-1.5 rounded-full font-medium hover:opacity-90 transition-opacity"
         >
-          Login
+          Iniciar Sesion
         </Link>
       </div>
     </nav>
