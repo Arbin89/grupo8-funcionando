@@ -38,7 +38,7 @@ const Index = () => {
           {/* Contenido del Hero */}
           <div className="absolute inset-0 flex flex-col justify-center items-start px-8 md:px-16 max-w-6xl mx-auto">
             <div className="text-white">
-              <p className="text-sm font-light tracking-widest mb-6 text-gray-300 uppercase">Verita nuestro restaurante</p>
+              <p className="text-sm font-light tracking-widest mb-6 text-gray-300 uppercase">Visita nuestro restaurante</p>
               <h1 className="text-7xl md:text-8xl font-serif font-light mb-8 tracking-tight">
                 HAZ TU RESERVA EN <span className="font-bold">SIGER</span>
               </h1>
