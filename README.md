@@ -118,8 +118,8 @@ Esto crea usuarios de prueba, inventario, reservaciones, menú y reportes de eje
 > | Usuario   | Contraseña   | Rol           |
 > |-----------|--------------|---------------|
 > | admin     | admin123     | Administrador |
-> | mesero1   | mesero123    | Mesero        |
-> | cocina1   | cocina123    | Cocina        |
+> | mesero    | mesero123    | Mesero        |
+> | cocina    | cocina123    | Cocina        |
 
 ### 7. Iniciar el proyecto completo *(un solo comando)*
 

@@ -75,8 +75,8 @@ async function seed() {
     // ── Usuarios ──────────────────────────────────────
     const users = [
         { name: "Admin Principal", email: "admin@siger.com", username: "admin", password: "admin123", role: "admin", status: "activo" },
-        { name: "Carlos Mesero", email: "mesero@siger.com", username: "mesero1", password: "mesero123", role: "mesero", status: "activo" },
-        { name: "Laura Cocina", email: "cocina@siger.com", username: "cocina1", password: "cocina123", role: "cocina", status: "activo" },
+        { name: "Carlos Mesero", email: "mesero@siger.com", username: "mesero", password: "mesero123", role: "mesero", status: "activo" },
+        { name: "Laura Cocina", email: "cocina@siger.com", username: "cocina", password: "cocina123", role: "cocina", status: "activo" },
         { name: "María López", email: "maria@siger.com", username: "mlopez", password: "usuario123", role: "usuario", status: "activo" },
         { name: "Pedro Rodríguez", email: "pedro@siger.com", username: "prodrig", password: "usuario123", role: "mesero", status: "inactivo" },
     ];
