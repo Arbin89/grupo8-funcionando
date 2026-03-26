@@ -39,6 +39,10 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/reservations", reservationRoutes);
 app.use("/inventory", inventoryRoutes);
+app.use("/menu", menuRoutes);
+app.use("/reports", reportRoutes);
+app.use("/kitchen", kitchenRoutes);
+app.use("/ai", aiRoutes);
 
 // Iniciamos el servidor
 app.listen(3000, () => {
