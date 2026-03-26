@@ -8,6 +8,7 @@ import {
   FileBarChart,
   LogOut,
   UtensilsCrossed,
+  BookOpen,
 } from "lucide-react";
 
 const sidebarSections = [
@@ -23,7 +24,8 @@ const sidebarSections = [
       { label: "Usuarios", icon: Users, path: "/admin/usuarios" },
       { label: "Reservaciones", icon: CalendarCheck, path: "/admin/reservaciones" },
       { label: "Inventario", icon: Package, path: "/admin/inventario" },
-      { label: "Cocina", icon: ChefHat, path: "/admin/cocina" },
+      { label: "Menú", icon: BookOpen, path: "/admin/menu" },
+      { label: "Cocina", icon: ChefHat, path: "/cocina" },
     ],
   },
   {
@@ -56,11 +58,10 @@ const AdminSidebar = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
-                    isActive
+                  className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${isActive
                       ? "text-primary-foreground bg-primary-foreground/10 border-l-2 border-primary-foreground"
                       : "text-primary-foreground/60 hover:text-primary-foreground hover:bg-primary-foreground/5"
-                  }`}
+                    }`}
                 >
                   <item.icon className="w-4 h-4" />
                   {item.label}

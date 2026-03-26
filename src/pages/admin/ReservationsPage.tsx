@@ -53,8 +53,8 @@ const ReservationsPage = () => {
       setError("");
       const data = await getReservations();
       setReservations(data);
-    } catch (err: any) {
-      setError(err.message || "Error al cargar reservaciones");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al cargar reservaciones");
     } finally {
       setLoading(false);
     }
@@ -139,8 +139,8 @@ const ReservationsPage = () => {
 
       await fetchReservations();
       resetForm();
-    } catch (err: any) {
-      setError(err.message || "Error al guardar la reservación");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al guardar la reservación");
     }
   };
 
@@ -156,8 +156,8 @@ const ReservationsPage = () => {
       setError("");
       await deleteReservation(id);
       await fetchReservations();
-    } catch (err: any) {
-      setError(err.message || "Error al eliminar la reservación");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error al eliminar la reservación");
     }
   };
 

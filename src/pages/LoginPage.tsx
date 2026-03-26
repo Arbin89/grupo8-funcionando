@@ -45,9 +45,9 @@ const LoginPage = () => {
 
       // Redirige al admin si el login fue exitoso
       navigate("/admin");
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Muestra error si el backend rechazó el login
-      setError(err.message || "No se pudo iniciar sesión");
+      setError(err instanceof Error ? err.message : "No se pudo iniciar sesión");
     } finally {
       setLoading(false);
     }
