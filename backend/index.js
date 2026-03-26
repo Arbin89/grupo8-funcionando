@@ -1,9 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const pool = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 const menuRoutes = require("./routes/menuRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const kitchenRoutes = require("./routes/kitchenRoutes");
@@ -17,6 +19,7 @@ app.use(cors());
 
 // Permite enviar y recibir JSON
 app.use(express.json());
+
 
 // Ruta base para probar que el backend está vivo
 app.get("/", async (req, res) => {
@@ -36,9 +39,6 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/reservations", reservationRoutes);
 app.use("/inventory", inventoryRoutes);
-app.use("/menu", menuRoutes);
-app.use("/reports", reportRoutes);
-app.use("/kitchen", kitchenRoutes);
 
 // Iniciamos el servidor
 app.listen(3000, () => {
