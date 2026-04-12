@@ -72,7 +72,7 @@ router.post("/login", async (req, res) => {
         role: user.role,
       },
       "siger_secreto_2026",
-      { expiresIn: "8h" }
+      { expiresIn: "7d" }
     );
 
     res.json({

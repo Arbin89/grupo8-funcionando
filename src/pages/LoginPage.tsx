@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { UtensilsCrossed } from "lucide-react";
 import { loginUser } from "../services/authService";
+import { saveToken, saveUser, getToken } from "../services/tokenService";
 
 const LoginPage = () => {
   // Guarda el usuario escrito
@@ -19,9 +20,9 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
 
-  // Si ya hay token, manda al admin
+  // Si ya hay token válido, manda al admin
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
 
     if (token) {
       navigate("/admin");
@@ -39,9 +40,9 @@ const LoginPage = () => {
       // Llama al backend con usuario y contraseña
       const data = await loginUser(usuario, contrasena);
 
-      // Guarda token y usuario en localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // Guarda token y usuario con seguridad (sin espacios en blanco)
+      saveToken(data.token);
+      saveUser(data.user);
 
       // Redirige al admin si el login fue exitoso
       navigate("/admin");
