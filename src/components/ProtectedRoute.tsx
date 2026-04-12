@@ -1,20 +1,22 @@
 import { Navigate } from "react-router-dom";
+import { getToken, isTokenExpired, clearSession } from "../services/tokenService";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const token = localStorage.getItem("token");
+  const token = getToken();
 
-  console.log("ProtectedRoute token:", token);
-
-  if (!token) {
-    console.log("No hay token, redirigiendo a /login");
+  // Si no hay token o el token está expirado, redirigir a login
+  if (!token || isTokenExpired(token)) {
+    if (token) {
+      // Si el token existe pero está expirado, limpiar la sesión
+      clearSession();
+    }
     return <Navigate to="/login" replace />;
   }
 
-  console.log("Token encontrado, dejando pasar");
   return <>{children}</>;
 };
 

@@ -68,7 +68,7 @@ const MenuPage = () => {
       return [...prev, {
         id: item.id,
         name: item.name,
-        emoji: item.emoji,
+        emoji: "",
         image_url: item.image_url || CATEGORY_FALLBACK[item.category] || CATEGORY_FALLBACK["General"],
         price: Number(item.price),
         quantity: 1,
@@ -96,7 +96,7 @@ const MenuPage = () => {
     setOrderError(null);
     try {
       const order = await createOrder({
-        items: cart.map((c) => ({ name: c.name, emoji: c.emoji, image_url: c.image_url, price: c.price, quantity: c.quantity })),
+        items: cart.map((c) => ({ name: c.name, emoji: "", image_url: c.image_url, price: c.price, quantity: c.quantity })),
         notes: notes || undefined,
         table_number: tableNumber || undefined,
       });
@@ -247,7 +247,9 @@ const MenuPage = () => {
                             onError={(e) => { e.currentTarget.onerror = null; (e.currentTarget as HTMLImageElement).src = CATEGORY_FALLBACK[item.category] ?? CATEGORY_FALLBACK["General"]; }}
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                          <span className="absolute bottom-3 left-3 text-4xl">{item.emoji}</span>
+                          <span className="absolute bottom-3 left-3 text-sm font-semibold text-white/90 bg-black/40 px-2 py-1 rounded-full">
+                            {item.category}
+                          </span>
                         </div>
                         
                         {/* Info */}
@@ -276,7 +278,7 @@ const MenuPage = () => {
         <button onClick={() => setCartOpen(true)}
           className="fixed bottom-6 right-6 bg-gray-900 text-white rounded-full shadow-2xl px-6 py-4 flex items-center gap-3 font-semibold text-sm hover:bg-gray-700 transition-all z-40 animate-bounce"
         >
-          🛒 Ver carrito
+          Ver carrito
           <span className="bg-white text-gray-900 text-xs font-extrabold px-2 py-0.5 rounded-full">{cartCount}</span>
           <span className="text-gray-300">·</span>
           <span>${cartTotal.toFixed(2)}</span>
@@ -293,8 +295,8 @@ const MenuPage = () => {
           <div className="w-full max-w-sm bg-white shadow-2xl flex flex-col h-full animate-slide-in">
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b bg-gray-900 text-white">
-              <h2 className="font-bold text-lg">🛒 Tu pedido</h2>
-              <button onClick={() => setCartOpen(false)} className="text-gray-300 hover:text-white text-xl">✕</button>
+              <h2 className="font-bold text-lg">Tu pedido</h2>
+              <button onClick={() => setCartOpen(false)} className="text-gray-300 hover:text-white text-xl" aria-label="Cerrar carrito">X</button>
             </div>
 
             {/* Items */}
@@ -324,7 +326,7 @@ const MenuPage = () => {
                     >+</button>
                   </div>
                   <span className="text-sm font-bold w-16 text-right">${(c.price * c.quantity).toFixed(2)}</span>
-                  <button onClick={() => removeFromCart(c.id)} className="text-red-400 hover:text-red-600 text-xs">✕</button>
+                  <button onClick={() => removeFromCart(c.id)} className="text-red-400 hover:text-red-600 text-xs" aria-label="Quitar del carrito">X</button>
                 </div>
               ))}
             </div>
