@@ -61,7 +61,7 @@ const LoginPage = () => {
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-2 mb-1">
               <UtensilsCrossed className="w-6 h-6 text-primary" />
-              <h2 className="text-xl font-bold text-primary">Iniciar Sesión</h2>
+              <h2 className="text-xl font-bold text-black">Iniciar Sesión</h2>
             </div>
             <p className="text-sm text-muted-foreground">
               Sistema de Gestión de Restaurante
@@ -70,7 +70,7 @@ const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold mb-1">Usuario</label>
+              <label className="block text-sm font-semibold mb-1 text-black">Usuario</label>
               <input
                 type="text"
                 value={usuario}
@@ -80,7 +80,7 @@ const LoginPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-1">
+              <label className="block text-sm font-semibold mb-1 text-black">
                 Contraseña
               </label>
               <input
@@ -107,7 +107,7 @@ const LoginPage = () => {
           </form>
 
           <div className="mt-6 bg-muted rounded-lg p-4 text-sm">
-            <p className="font-semibold mb-1">Credenciales de prueba:</p>
+            <p className="font-semibold mb-1 text-black">Credenciales de prueba:</p>
             <p className="text-muted-foreground">Admin: admin / admin123</p>
             <p className="text-muted-foreground">Cocina: cocina / cocina123</p>
             <p className="text-muted-foreground">Mesero: mesero / mesero123</p>
