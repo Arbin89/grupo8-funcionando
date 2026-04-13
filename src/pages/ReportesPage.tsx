@@ -39,11 +39,11 @@ const ReportesPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg">
-        <Link to="/" className="inline-block mb-4 text-sm text-blue-600 hover:underline">
+        <Link to="/" className="bg-foreground text-primary-foreground text-sm px-5 py-1.5 rounded-full font-medium hover:opacity-90 transition-opacity">
           ← Volver
         </Link>
 
-        <h1 className="text-2xl font-bold mb-6 text-center">Enviar Reporte</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center text-black">Enviar Reporte</h1>
 
         {success ? (
           <div className="text-center py-6 space-y-3">
@@ -66,7 +66,7 @@ const ReportesPage = () => {
             )}
 
             <div>
-              <label className="block text-sm font-medium mb-1">Nombre *</label>
+              <label className="block text-sm font-medium mb-1 text-black">Nombre:</label>
               <input
                 type="text"
                 name="name"
@@ -79,7 +79,7 @@ const ReportesPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Correo Electrónico *</label>
+              <label className="block text-sm font-medium mb-1 text-black">Correo Electrónico:</label>
               <input
                 type="email"
                 name="email"
@@ -92,19 +92,19 @@ const ReportesPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Tipo de Reporte</label>
+              <label className="block text-sm font-medium mb-1 text-black">Tipo de Reporte:</label>
               <select
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               >
                 {TIPOS.map((t) => <option key={t}>{t}</option>)}
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Descripción *</label>
+              <label className="block text-sm font-medium mb-1 text-black">Descripción:</label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -119,7 +119,7 @@ const ReportesPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:opacity-90 transition disabled:opacity-60"
+              className="w-full bg-foreground text-background py-2.5 rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-60"
             >
               {loading ? "Enviando..." : "Enviar Reporte"}
             </button>

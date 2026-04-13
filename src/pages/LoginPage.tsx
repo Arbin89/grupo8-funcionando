@@ -61,7 +61,7 @@ const LoginPage = () => {
         <div className="bg-card rounded-xl shadow-lg p-8 w-full max-w-md">
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-2 mb-1">
-              <UtensilsCrossed className="w-6 h-6 text-primary" />
+              <UtensilsCrossed className="w-6 h-6 text-black" />
               <h2 className="text-xl font-bold text-black">Iniciar Sesión</h2>
             </div>
             <p className="text-sm text-muted-foreground">
