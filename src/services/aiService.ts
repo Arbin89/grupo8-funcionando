@@ -22,3 +22,22 @@ export const generarResumenDia = async (
     body: JSON.stringify(data),
   });
 };
+
+export const getReporteDiario = async () => {
+  return await apiRequest("/ai/reporte-diario");
+};
+
+export const getAlertasInventario = async () => {
+  return await apiRequest("/ai/alertas-inventario");
+};
+
+export const getSugerenciasMenu = async () => {
+  return await apiRequest("/ai/sugerencias-menu");
+};
+
+export const chat = async (mensaje: string, contexto?: string) => {
+  return await apiRequest("/ai/chat", {
+    method: "POST",
+    body: JSON.stringify({ mensaje, contexto }),
+  });
+};

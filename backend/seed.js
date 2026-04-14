@@ -1,10 +1,13 @@
 const bcrypt = require("bcryptjs");
 const pool = require("./config/db");
+const path = require("path");
 const menuItems = require("./data/defaultMenuItems");
-require("dotenv").config();
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 async function seed() {
-            // ── Platos del menú ──────────────────────────────
+    // ── Platos del menú ──────────────────────────────
+    const { rows: rMenu } = await pool.query("SELECT COUNT(*) FROM menu_items");
+    if (parseInt(rMenu[0].count) === 0) {
             for (const m of menuItems) {
                 await pool.query(
                     `INSERT INTO menu_items (name, description, price, category, emoji, image_url, available)
@@ -13,6 +16,9 @@ async function seed() {
                 );
             }
             console.log("✅ Platos del menú insertados");
+    } else {
+        console.log("⏭️ Platos ya existen, omitiendo (previniendo duplicados)...");
+    }
     console.log("🌱 Iniciando seed...\n");
 
     // ── Usuarios ──────────────────────────────────────
@@ -48,7 +54,9 @@ async function seed() {
     console.log("✅ Categorías de inventario insertadas");
 
     // ── Productos de inventario ────────────────────────
-    const items = [
+    const { rows: rInventario } = await pool.query("SELECT COUNT(*) FROM inventory_items");
+    if (parseInt(rInventario[0].count) === 0) {
+        const items = [
         { name: "Carne de Res", cat: "Carnes", stock: 15, min: 5, price: 250.00 },
         { name: "Pechuga de Pollo", cat: "Carnes", stock: 20, min: 8, price: 120.00 },
         { name: "Filete de Cerdo", cat: "Carnes", stock: 4, min: 5, price: 180.00 },
@@ -72,43 +80,56 @@ async function seed() {
             [it.name, catMap[it.cat], it.stock, it.min, it.price]
         );
     }
-    console.log("✅ Inventario insertado");
+        console.log("✅ Inventario insertado");
+    } else {
+        console.log("⏭️ Inventario ya existe, omitiendo...");
+    }
 
     // ── Reservaciones ──────────────────────────────────
-    const reservations = [
-        { customer_name: "Juan Pérez", email: "juan@email.com", phone: "809-555-0101", date: "2026-03-10", time: "19:00", people: 4, notes: "Mesa cerca de la ventana", status: "confirmada" },
-        { customer_name: "Ana García", email: "ana@email.com", phone: "809-555-0202", date: "2026-03-11", time: "20:30", people: 2, notes: "Aniversario de bodas", status: "confirmada" },
-        { customer_name: "Luis Martínez", email: "luis@email.com", phone: "809-555-0303", date: "2026-03-12", time: "13:00", people: 6, notes: "", status: "pendiente" },
-        { customer_name: "Sofía Hernández", email: "sofia@email.com", phone: "809-555-0404", date: "2026-03-12", time: "21:00", people: 3, notes: "Alergia al mariscos", status: "pendiente" },
-        { customer_name: "Diego Ramírez", email: "diego@email.com", phone: "809-555-0505", date: "2026-03-08", time: "18:30", people: 5, notes: "Cumpleaños", status: "cancelada" },
-        { customer_name: "Camila Torres", email: "camila@email.com", phone: "809-555-0606", date: "2026-03-15", time: "20:00", people: 2, notes: "Cena romántica", status: "confirmada" },
-    ];
+    const { rows: rReservaciones } = await pool.query("SELECT COUNT(*) FROM reservations");
+    if (parseInt(rReservaciones[0].count) === 0) {
+        const reservations = [
+            { customer_name: "Juan Pérez", email: "juan@email.com", phone: "809-555-0101", date: "2026-03-10", time: "19:00", people: 4, notes: "Mesa cerca de la ventana", status: "confirmada" },
+            { customer_name: "Ana García", email: "ana@email.com", phone: "809-555-0202", date: "2026-03-11", time: "20:30", people: 2, notes: "Aniversario de bodas", status: "confirmada" },
+            { customer_name: "Luis Martínez", email: "luis@email.com", phone: "809-555-0303", date: "2026-03-12", time: "13:00", people: 6, notes: "", status: "pendiente" },
+            { customer_name: "Sofía Hernández", email: "sofia@email.com", phone: "809-555-0404", date: "2026-03-12", time: "21:00", people: 3, notes: "Alergia al mariscos", status: "pendiente" },
+            { customer_name: "Diego Ramírez", email: "diego@email.com", phone: "809-555-0505", date: "2026-03-08", time: "18:30", people: 5, notes: "Cumpleaños", status: "cancelada" },
+            { customer_name: "Camila Torres", email: "camila@email.com", phone: "809-555-0606", date: "2026-03-15", time: "20:00", people: 2, notes: "Cena romántica", status: "confirmada" },
+        ];
 
-    for (const r of reservations) {
-        await pool.query(
-            `INSERT INTO reservations (customer_name, email, phone, reservation_date, reservation_time, people, notes, status)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-            [r.customer_name, r.email, r.phone, r.date, r.time, r.people, r.notes, r.status]
-        );
+        for (const r of reservations) {
+            await pool.query(
+                `INSERT INTO reservations (customer_name, email, phone, reservation_date, reservation_time, people, notes, status)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+                [r.customer_name, r.email, r.phone, r.date, r.time, r.people, r.notes, r.status]
+            );
+        }
+        console.log("✅ Reservaciones insertadas");
+    } else {
+        console.log("⏭️ Reservaciones ya existen, omitiendo...");
     }
-    console.log("✅ Reservaciones insertadas");
 
     // ── Reportes ───────────────────────────────────────
-    const reports = [
-        { name: "Carlos Méndez", email: "carlos@email.com", type: "Queja", description: "El servicio tardó más de 45 minutos en llegar.", status: "pendiente" },
-        { name: "Rosa Jiménez", email: "rosa@email.com", type: "Sugerencia", description: "Sería genial tener opciones vegetarianas en el menú.", status: "revisado" },
-        { name: "Ángel Vargas", email: "angel@email.com", type: "Error en el sistema", description: "No pude completar mi reservación en línea.", status: "resuelto" },
-        { name: "Lucía Castillo", email: "lucia@email.com", type: "Sugerencia", description: "Podrían poner música en vivo los viernes.", status: "pendiente" },
-        { name: "Mario Soto", email: "mario@email.com", type: "Queja", description: "El baño no estaba limpio a las 8pm.", status: "revisado" },
-    ];
+    const { rows: rReportes } = await pool.query("SELECT COUNT(*) FROM reports");
+    if (parseInt(rReportes[0].count) === 0) {
+        const reports = [
+            { name: "Carlos Méndez", email: "carlos@email.com", type: "Queja", description: "El servicio tardó más de 45 minutos en llegar.", status: "pendiente" },
+            { name: "Rosa Jiménez", email: "rosa@email.com", type: "Sugerencia", description: "Sería genial tener opciones vegetarianas en el menú.", status: "revisado" },
+            { name: "Ángel Vargas", email: "angel@email.com", type: "Error en el sistema", description: "No pude completar mi reservación en línea.", status: "resuelto" },
+            { name: "Lucía Castillo", email: "lucia@email.com", type: "Sugerencia", description: "Podrían poner música en vivo los viernes.", status: "pendiente" },
+            { name: "Mario Soto", email: "mario@email.com", type: "Queja", description: "El baño no estaba limpio a las 8pm.", status: "revisado" },
+        ];
 
-    for (const rp of reports) {
-        await pool.query(
-            `INSERT INTO reports (name, email, type, description, status) VALUES ($1,$2,$3,$4,$5)`,
-            [rp.name, rp.email, rp.type, rp.description, rp.status]
-        );
+        for (const rp of reports) {
+            await pool.query(
+                `INSERT INTO reports (name, email, type, description, status) VALUES ($1,$2,$3,$4,$5)`,
+                [rp.name, rp.email, rp.type, rp.description, rp.status]
+            );
+        }
+        console.log("✅ Reportes insertados");
+    } else {
+        console.log("⏭️ Reportes ya existen, omitiendo...");
     }
-    console.log("✅ Reportes insertados");
 
     console.log("\n🎉 Seed completado exitosamente!");
     process.exit(0);
