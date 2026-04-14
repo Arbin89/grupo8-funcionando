@@ -20,6 +20,59 @@ import {
   chat,
 } from "@/services/aiService";
 
+// Elimina símbolos markdown del texto
+function cleanMarkdown(raw: string): string {
+  return raw
+    .replace(/^#{1,6}\s+/gm, "")        // ### títulos
+    .replace(/\*\*(.+?)\*\*/g, "$1")    // **negrita**
+    .replace(/\*(.+?)\*/g, "$1")        // *cursiva*
+    .replace(/__(.+?)__/g, "$1")        // __negrita__
+    .replace(/_(.+?)_/g, "$1");         // _cursiva_
+}
+
+// Renderiza texto plano con soporte de listas
+function FormattedText({ text, className }: { text: string; className?: string }) {
+  if (!text) return null;
+  const cleaned = cleanMarkdown(text);
+  const lines = cleaned.split("\n");
+  const elements: React.ReactNode[] = [];
+  let listItems: string[] = [];
+  let listKey = 0;
+
+  const flushList = () => {
+    if (listItems.length > 0) {
+      elements.push(
+        <ul key={`list-${listKey++}`} className="list-disc list-inside space-y-1 my-1 pl-2">
+          {listItems.map((item, i) => (
+            <li key={i} className="text-sm leading-relaxed">{item}</li>
+          ))}
+        </ul>
+      );
+      listItems = [];
+    }
+  };
+
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim();
+    const listMatch = trimmed.match(/^[-•]\s+(.+)/) ?? trimmed.match(/^\d+\.\s+(.+)/);
+    if (listMatch) {
+      listItems.push(listMatch[1]);
+    } else {
+      flushList();
+      if (trimmed) {
+        elements.push(
+          <p key={idx} className="text-sm leading-relaxed">{trimmed}</p>
+        );
+      } else {
+        elements.push(<div key={`gap-${idx}`} className="h-1" />);
+      }
+    }
+  });
+  flushList();
+
+  return <div className={`space-y-1 ${className ?? ""}`}>{elements}</div>;
+}
+
 interface Message {
   role: "user" | "assistant";
   text: string;
@@ -163,9 +216,7 @@ export default function IAPage() {
                   <CardTitle className="text-base">Reporte del Día</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                    {reporteTexto}
-                  </p>
+                  <FormattedText text={reporteTexto} />
                 </CardContent>
               </Card>
 
@@ -227,9 +278,7 @@ export default function IAPage() {
                       <CardTitle className="text-base">Análisis de Alertas</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                        {alertasTexto}
-                      </p>
+                      <FormattedText text={alertasTexto} />
                     </CardContent>
                   </Card>
 
@@ -291,9 +340,7 @@ export default function IAPage() {
                 <CardTitle className="text-base">Especiales del Día</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed">
-                  {sugerenciasTexto}
-                </p>
+                <FormattedText text={sugerenciasTexto} />
               </CardContent>
             </Card>
           )}
@@ -317,13 +364,17 @@ export default function IAPage() {
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-[75%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${
+                    className={`max-w-[75%] rounded-lg px-3 py-2 ${
                       msg.role === "user"
-                        ? "bg-blue-100 text-blue-900"
+                        ? "bg-blue-100 text-blue-900 text-sm"
                         : "bg-gray-100 text-gray-900"
                     }`}
                   >
-                    {msg.text}
+                    {msg.role === "user" ? (
+                      msg.text
+                    ) : (
+                      <FormattedText text={msg.text} />
+                    )}
                   </div>
                 </div>
               ))}

@@ -4,6 +4,59 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { apiRequest } from "@/services/api";
 
+// Elimina símbolos markdown del texto
+function cleanMarkdown(raw: string): string {
+  return raw
+    .replace(/^#{1,6}\s+/gm, "")        // ### títulos
+    .replace(/\*\*(.+?)\*\*/g, "$1")    // **negrita**
+    .replace(/\*(.+?)\*/g, "$1")        // *cursiva*
+    .replace(/__(.+?)__/g, "$1")        // __negrita__
+    .replace(/_(.+?)_/g, "$1");         // _cursiva_
+}
+
+// Renderiza texto plano con soporte de listas
+function FormattedText({ text }: { text: string }) {
+  if (!text) return null;
+  const cleaned = cleanMarkdown(text);
+  const lines = cleaned.split("\n");
+  const elements: React.ReactNode[] = [];
+  let listItems: string[] = [];
+  let listKey = 0;
+
+  const flushList = () => {
+    if (listItems.length > 0) {
+      elements.push(
+        <ul key={`list-${listKey++}`} className="list-disc list-inside space-y-1 my-2 pl-2">
+          {listItems.map((item, i) => (
+            <li key={i} className="text-sm leading-relaxed">{item}</li>
+          ))}
+        </ul>
+      );
+      listItems = [];
+    }
+  };
+
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim();
+    const listMatch = trimmed.match(/^[-•]\s+(.+)/) ?? trimmed.match(/^\d+\.\s+(.+)/);
+    if (listMatch) {
+      listItems.push(listMatch[1]);
+    } else {
+      flushList();
+      if (trimmed) {
+        elements.push(
+          <p key={idx} className="text-sm leading-relaxed">{trimmed}</p>
+        );
+      } else {
+        elements.push(<div key={`gap-${idx}`} className="h-1" />);
+      }
+    }
+  });
+  flushList();
+
+  return <div className="space-y-1">{elements}</div>;
+}
+
 export default function IATestPage() {
   // Test 1 — Reporte Diario
   const [reporteRes, setReporteRes] = useState<any>(null);
@@ -128,13 +181,13 @@ export default function IATestPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <Button onClick={testReporte} disabled={reporteLoading} size="sm">
-            {reporteLoading ? "Probando..." : "Probar GET /ai/reporte-diario"}
+            {reporteLoading ? "Probando..." : "Probar reporte"}
           </Button>
           {reporteError && <p className="text-red-500 text-sm">{reporteError}</p>}
           {reporteRes && (
-            <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-64">
-              {JSON.stringify(reporteRes, null, 2)}
-            </pre>
+            <div className="bg-muted p-4 rounded max-h-64 overflow-y-auto">
+              <FormattedText text={reporteRes.reporte ?? JSON.stringify(reporteRes, null, 2)} />
+            </div>
           )}
         </CardContent>
       </Card>
@@ -146,13 +199,13 @@ export default function IATestPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <Button onClick={testAlertas} disabled={alertasLoading} size="sm">
-            {alertasLoading ? "Probando..." : "Probar GET /ai/alertas-inventario"}
+            {alertasLoading ? "Probando..." : "Probar alertas"}
           </Button>
           {alertasError && <p className="text-red-500 text-sm">{alertasError}</p>}
           {alertasRes && (
-            <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-64">
-              {JSON.stringify(alertasRes, null, 2)}
-            </pre>
+            <div className="bg-muted p-4 rounded max-h-64 overflow-y-auto">
+              <FormattedText text={alertasRes.alertas ?? JSON.stringify(alertasRes, null, 2)} />
+            </div>
           )}
         </CardContent>
       </Card>
@@ -164,13 +217,13 @@ export default function IATestPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <Button onClick={testSugerencias} disabled={sugerenciasLoading} size="sm">
-            {sugerenciasLoading ? "Probando..." : "Probar GET /ai/sugerencias-menu"}
+            {sugerenciasLoading ? "Probando..." : "Probar sugerencias"}
           </Button>
           {sugerenciasError && <p className="text-red-500 text-sm">{sugerenciasError}</p>}
           {sugerenciasRes && (
-            <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-64">
-              {JSON.stringify(sugerenciasRes, null, 2)}
-            </pre>
+            <div className="bg-muted p-4 rounded max-h-64 overflow-y-auto">
+              <FormattedText text={sugerenciasRes.sugerencias ?? JSON.stringify(sugerenciasRes, null, 2)} />
+            </div>
           )}
         </CardContent>
       </Card>
@@ -194,9 +247,9 @@ export default function IATestPage() {
           </div>
           {chatError && <p className="text-red-500 text-sm">{chatError}</p>}
           {chatRes && (
-            <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-64">
-              {JSON.stringify(chatRes, null, 2)}
-            </pre>
+            <div className="bg-muted p-4 rounded max-h-64 overflow-y-auto">
+              <FormattedText text={chatRes.respuesta ?? JSON.stringify(chatRes, null, 2)} />
+            </div>
           )}
         </CardContent>
       </Card>
@@ -249,13 +302,13 @@ export default function IATestPage() {
             </div>
           </div>
           <Button onClick={testResumen} disabled={resumenLoading} size="sm">
-            {resumenLoading ? "Probando..." : "Probar POST /ai/resumen-dia"}
+            {resumenLoading ? "Probando..." : "Probar resumen"}
           </Button>
           {resumenError && <p className="text-red-500 text-sm">{resumenError}</p>}
           {resumenRes && (
-            <pre className="bg-muted p-3 rounded text-xs overflow-auto max-h-64">
-              {JSON.stringify(resumenRes, null, 2)}
-            </pre>
+            <div className="bg-muted p-4 rounded max-h-64 overflow-y-auto">
+              <FormattedText text={resumenRes.resumen ?? JSON.stringify(resumenRes, null, 2)} />
+            </div>
           )}
         </CardContent>
       </Card>
