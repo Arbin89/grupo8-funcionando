@@ -1,10 +1,13 @@
 const bcrypt = require("bcryptjs");
 const pool = require("./config/db");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 async function seed() {
-            // ── Platos del menú ──────────────────────────────
-            const menuItems = [
+    // ── Platos del menú ──────────────────────────────
+    const { rows: rMenu } = await pool.query("SELECT COUNT(*) FROM menu_items");
+    if (parseInt(rMenu[0].count) === 0) {
+        const menuItems = [
                 // Entradas
                 { name: "Bruschetta", description: "Pan tostado con tomate y albahaca", price: 120, category: "Entradas", emoji: "🥖", image_url: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop", available: true },
                 { name: "Croquetas de Jamón", description: "Croquetas crujientes de jamón serrano", price: 140, category: "Entradas", emoji: "🍤", image_url: "https://images.unsplash.com/photo-1519864600265-abb0112fa5b2?w=600&h=400&fit=crop", available: true },
@@ -50,18 +53,6 @@ async function seed() {
                 { name: "Piña Colada", description: "Cóctel tropical de piña y coco", price: 65, category: "Bebidas", emoji: "🍍", image_url: "https://images.unsplash.com/photo-1523677011784-1c3f36a3b92a?w=600&h=400&fit=crop", available: true },
                 { name: "Batido de Fresa", description: "Batido cremoso de fresa", price: 50, category: "Bebidas", emoji: "🍓", image_url: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop", available: true },
             ];
-            // Generar más platos para llegar a 100
-            for (let i = 0; i < 60; i++) {
-                menuItems.push({
-                    name: `Plato Especial ${i + 1}`,
-                    description: `Plato especial del chef número ${i + 1}`,
-                    price: 100 + i * 2,
-                    category: ["Entradas", "Principales", "Postres", "Bebidas"][i % 4],
-                    emoji: "🍽️",
-                    image_url: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
-                    available: true,
-                });
-            }
             for (const m of menuItems) {
                 await pool.query(
                     `INSERT INTO menu_items (name, description, price, category, emoji, image_url, available)
@@ -70,6 +61,9 @@ async function seed() {
                 );
             }
             console.log("✅ Platos del menú insertados");
+    } else {
+        console.log("⏭️ Platos ya existen, omitiendo (previniendo duplicados)...");
+    }
     console.log("🌱 Iniciando seed...\n");
 
     // ── Usuarios ──────────────────────────────────────
@@ -105,7 +99,9 @@ async function seed() {
     console.log("✅ Categorías de inventario insertadas");
 
     // ── Productos de inventario ────────────────────────
-    const items = [
+    const { rows: rInventario } = await pool.query("SELECT COUNT(*) FROM inventory_items");
+    if (parseInt(rInventario[0].count) === 0) {
+        const items = [
         { name: "Carne de Res", cat: "Carnes", stock: 15, min: 5, price: 250.00 },
         { name: "Pechuga de Pollo", cat: "Carnes", stock: 20, min: 8, price: 120.00 },
         { name: "Filete de Cerdo", cat: "Carnes", stock: 4, min: 5, price: 180.00 },
@@ -129,7 +125,11 @@ async function seed() {
             [it.name, catMap[it.cat], it.stock, it.min, it.price]
         );
     }
-    console.log("✅ Inventario insertado");
+        }
+        console.log("✅ Inventario insertado");
+    } else {
+        console.log("⏭️ Inventario ya existe, omitiendo...");
+    }
 
     // ── Reservaciones ──────────────────────────────────
     const reservations = [
@@ -148,7 +148,11 @@ async function seed() {
             [r.customer_name, r.email, r.phone, r.date, r.time, r.people, r.notes, r.status]
         );
     }
-    console.log("✅ Reservaciones insertadas");
+        }
+        console.log("✅ Reservaciones insertadas");
+    } else {
+        console.log("⏭️ Reservaciones ya existen, omitiendo...");
+    }
 
     // ── Reportes ───────────────────────────────────────
     const reports = [
@@ -165,7 +169,11 @@ async function seed() {
             [rp.name, rp.email, rp.type, rp.description, rp.status]
         );
     }
-    console.log("✅ Reportes insertados");
+        }
+        console.log("✅ Reportes insertados");
+    } else {
+        console.log("⏭️ Reportes ya existen, omitiendo...");
+    }
 
     console.log("\n🎉 Seed completado exitosamente!");
     process.exit(0);

@@ -9,6 +9,8 @@ import {
   LogOut,
   UtensilsCrossed,
   BookOpen,
+  Sparkles,
+  Bot
 } from "lucide-react";
 
 const sidebarSections = [
@@ -32,6 +34,13 @@ const sidebarSections = [
     title: "REPORTES",
     items: [
       { label: "Reportes", icon: FileBarChart, path: "/admin/reportes" },
+    ],
+  },
+  {
+    title: "INTELIGENCIA ARTIFICIAL",
+    items: [
+      { label: "Asistente IA", icon: Sparkles, path: "/admin/ia" },
+      { label: "Test IA", icon: Bot, path: "/admin/ia-test" },
     ],
   },
 ];

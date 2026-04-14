@@ -1,5 +1,6 @@
 const express = require("express");
 const axios = require("axios");
+const pool = require("../config/db");
 
 const router = express.Router();
 
@@ -13,8 +14,7 @@ router.post("/resumen-dia", async (req, res) => {
       observacionClave,
     } = req.body;
 
-    console.log("API KEY:", process.env.OPENROUTER_API_KEY ? "Sí existe" : "No existe");
-    console.log("MODEL:", process.env.OPENROUTER_MODEL);
+    console.log("API KEY:", process.env.GROQ_API_KEY ? "Sí existe" : "No existe");
 
     const prompt = `
 Genera un resumen ejecutivo breve y formal en español para un administrador.
@@ -35,9 +35,9 @@ Reglas:
 `;
 
     const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
+      "https://api.groq.com/openai/v1/chat/completions",
       {
-        model: process.env.OPENROUTER_MODEL,
+        model: "llama-3.1-8b-instant",
         messages: [
           {
             role: "system",
@@ -54,7 +54,7 @@ Reglas:
       },
       {
         headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
           "Content-Type": "application/json",
         },
       }
@@ -78,6 +78,85 @@ Reglas:
       message: "No se pudo generar el resumen del día",
       error: error.response?.data || error.message,
     });
+  }
+});
+
+router.get("/reporte-diario", async (req, res) => {
+  try {
+    const { rows: rReservas } = await pool.query("SELECT COUNT(*) as total FROM reservations WHERE reservation_date = CURRENT_DATE");
+    const { rows: rInventario } = await pool.query("SELECT * FROM inventory_items WHERE stock_available <= stock_minimum");
+    const { rows: rMenu } = await pool.query("SELECT * FROM menu_items LIMIT 5");
+
+    const prompt = `Actúa como el asistente del restaurante. Genera un reporte breve basado en estos datos:\nReservas hoy: ${rReservas[0].total}\nProductos en inventario bajo: ${rInventario.length}\nPor favor haz un pequeño resumen general de la operativa de hoy, en formato claro y usando listas si es necesario.`;
+
+    const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
+      model: "llama-3.1-8b-instant",
+      messages: [{ role: "system", content: "Eres el asistente inteligente de un restaurante." }, { role: "user", content: prompt }]
+    }, { headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` }});
+
+    res.json({
+      reporte: response.data.choices[0].message.content,
+      datos: { reservas: { total: parseInt(rReservas[0].total) }, inventarioBajo: rInventario, platosPopulares: rMenu }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/alertas-inventario", async (req, res) => {
+  try {
+    const { rows: rInventario } = await pool.query("SELECT * FROM inventory_items WHERE stock_available <= stock_minimum");
+    
+    let prompt = "Tenemos todos los niveles de inventario en orden. Genera un mensaje positivo animando al equipo de cocina.";
+    if (rInventario.length > 0) {
+      const nombres = rInventario.map(i => i.name).join(", ");
+      prompt = `Los siguientes ingredientes están en nivel crítico de inventario: ${nombres}. Escribe una alerta corta y profesional para que los gerentes hagan la compra urgente.`;
+    }
+
+    const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
+      model: "llama-3.1-8b-instant",
+      messages: [{ role: "system", content: "Eres el asistente inteligente de un restaurante." }, { role: "user", content: prompt }]
+    }, { headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` }});
+
+    res.json({ alertas: response.data.choices[0].message.content, items: rInventario });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/sugerencias-menu", async (req, res) => {
+  try {
+    const { rows: rMenu } = await pool.query("SELECT * FROM menu_items WHERE available = true LIMIT 10");
+    const nombres = rMenu.map(i => i.name).join(", ");
+    
+    const prompt = `El menú actual tiene estos platos: ${nombres}. Genera 3 sugerencias innovadoras o combos especiales atractivos que el restaurante podría promover hoy.`;
+
+    const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
+      model: "llama-3.1-8b-instant",
+      messages: [{ role: "system", content: "Eres el asistente inteligente de un restaurante." }, { role: "user", content: prompt }]
+    }, { headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` }});
+
+    res.json({ sugerencias: response.data.choices[0].message.content });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/chat", async (req, res) => {
+  try {
+    const { mensaje, contexto } = req.body;
+    
+    const response = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
+      model: "llama-3.1-8b-instant",
+      messages: [
+        { role: "system", content: "Eres un útil asistente de Inteligencia Artificial para el sistema de restaurantes SIGER. Responde preguntas de usuarios con tono profesional." },
+        { role: "user", content: mensaje }
+      ]
+    }, { headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` }});
+
+    res.json({ respuesta: response.data.choices[0].message.content });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
