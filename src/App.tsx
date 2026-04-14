@@ -19,6 +19,8 @@ import CreateReservationPage from "./pages/CreateReservationPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ReportesPage from "./pages/ReportesPage";
 import ReportA from "./pages/admin/ReportA";
+import IAPage from "./pages/admin/IAPage";
+import IATestPage from "./pages/admin/IATestPage";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +53,8 @@ const App = () => (
             <Route path="menu" element={<MenuAdminPage />} />
             <Route path="reportes" element={<ReportesAdminPage />} />
             <Route path="reporta" element={<ReportA />} />
+            <Route path="ia" element={<IAPage />} />
+            <Route path="ia-test" element={<IATestPage />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

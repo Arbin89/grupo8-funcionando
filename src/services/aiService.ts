@@ -1,6 +1,6 @@
 import { apiRequest } from "./api";
 
-export interface ResumenDiaPayload {
+export interface ResumenDiaParams {
   fecha: string;
   registrosProcesados: number;
   completados: number;
@@ -8,17 +8,40 @@ export interface ResumenDiaPayload {
   observacionClave: string;
 }
 
-export interface ResumenDiaResponse {
-  ok: boolean;
-  resumen?: string;
-  message?: string;
+export async function resumenDia(
+  datos: ResumenDiaParams
+): Promise<{ ok: boolean; resumen: string }> {
+  return apiRequest("/ai/resumen-dia", {
+    method: "POST",
+    body: JSON.stringify(datos),
+  });
 }
 
-export const generarResumenDia = async (
-  data: ResumenDiaPayload
-): Promise<ResumenDiaResponse> => {
-  return await apiRequest("/ai/resumen-dia", {
+export async function getReporteDiario(): Promise<{
+  reporte: string;
+  fecha: string;
+  datos: any;
+}> {
+  return apiRequest("/ai/reporte-diario");
+}
+
+export async function getAlertasInventario(): Promise<{
+  alertas: string;
+  items: any[];
+}> {
+  return apiRequest("/ai/alertas-inventario");
+}
+
+export async function getSugerenciasMenu(): Promise<{ sugerencias: string }> {
+  return apiRequest("/ai/sugerencias-menu");
+}
+
+export async function chat(
+  mensaje: string,
+  contexto?: string
+): Promise<{ respuesta: string }> {
+  return apiRequest("/ai/chat", {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify({ mensaje, contexto }),
   });
-};
+}

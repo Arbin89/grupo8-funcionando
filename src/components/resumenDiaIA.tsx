@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { generarResumenDia } from "../services/aiService";
+import { resumenDia } from "../services/aiService";
 
 const ResumenDiaIA = () => {
   const [loading, setLoading] = useState(false);
@@ -10,7 +10,7 @@ const ResumenDiaIA = () => {
     setResumen("");
 
     try {
-      const response = await generarResumenDia({
+      const response = await resumenDia({
         fecha: new Date().toLocaleDateString("es-DO"),
         registrosProcesados: 42,
         completados: 31,
@@ -21,7 +21,7 @@ const ResumenDiaIA = () => {
       if (response.ok && response.resumen) {
         setResumen(response.resumen);
       } else {
-        setResumen(response.message || "No se pudo generar el resumen.");
+        setResumen("No se pudo generar el resumen.");
       }
     } catch (error) {
       setResumen("Ocurrió un error al generar el resumen.");
@@ -54,4 +54,4 @@ const ResumenDiaIA = () => {
   );
 };
 
-export default ResumenDiaIA;
+export default ResumenDiaIA

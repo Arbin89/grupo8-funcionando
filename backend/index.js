@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ override: true });
 const express = require("express");
 const cors = require("cors");
 const pool = require("./config/db");
@@ -9,19 +9,13 @@ const aiRoutes = require("./routes/aiRoutes");
 const menuRoutes = require("./routes/menuRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const kitchenRoutes = require("./routes/kitchenRoutes");
-// Importamos las rutas
 const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-// Permite peticiones desde el frontend
 app.use(cors());
-
-// Permite enviar y recibir JSON
 app.use(express.json());
 
-
-// Ruta base para probar que el backend está vivo
 app.get("/", async (req, res) => {
   try {
     const result = await pool.query("SELECT NOW()");
@@ -34,7 +28,6 @@ app.get("/", async (req, res) => {
   }
 });
 
-// Rutas de autenticación
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/reservations", reservationRoutes);
@@ -44,7 +37,6 @@ app.use("/reports", reportRoutes);
 app.use("/kitchen", kitchenRoutes);
 app.use("/ai", aiRoutes);
 
-// Iniciamos el servidor
 app.listen(3000, () => {
   console.log("Servidor corriendo en http://localhost:3000");
 });
