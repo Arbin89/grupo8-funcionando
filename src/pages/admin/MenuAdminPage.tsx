@@ -17,7 +17,7 @@ const emptyForm = (): MenuItemPayload => ({
     description: "",
     price: 0,
     category: "General",
-    emoji: "🍽️",
+    emoji: "",
     image_url: "",
     available: true,
 });
@@ -98,7 +98,7 @@ const MenuAdminPage = () => {
             description: item.description,
             price: item.price,
             category: item.category,
-            emoji: item.emoji,
+            emoji: item.emoji || "",
             image_url: item.image_url || "",
             available: item.available,
         });
@@ -237,8 +237,13 @@ const MenuAdminPage = () => {
                                             />
                                         </td>
                                         <td className="py-3 pr-4">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-2xl">{item.emoji}</span>
+                                            <div className="flex items-center gap-3">
+                                                <img
+                                                    src={item.image_url || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=120&h=120&fit=crop"}
+                                                    alt={item.name}
+                                                    className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                                                    onError={(e) => { e.currentTarget.onerror = null; (e.currentTarget as HTMLImageElement).src = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=120&h=120&fit=crop"; }}
+                                                />
                                                 <div>
                                                     <p className="font-medium">{item.name}</p>
                                                     <p className="text-xs text-muted-foreground">{item.description}</p>
@@ -300,14 +305,6 @@ const MenuAdminPage = () => {
                                         className="w-full border border-input rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                                         value={form.name}
                                         onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm font-semibold block mb-1">Emoji</label>
-                                    <input
-                                        className="w-full border border-input rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                                        value={form.emoji}
-                                        onChange={(e) => setForm({ ...form, emoji: e.target.value })}
                                     />
                                 </div>
                                 <div>

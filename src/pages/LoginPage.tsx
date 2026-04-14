@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { UtensilsCrossed } from "lucide-react";
 import { loginUser } from "../services/authService";
+import { saveToken, saveUser, getToken } from "../services/tokenService";
 
 const LoginPage = () => {
   // Guarda el usuario escrito
@@ -19,9 +20,9 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
 
-  // Si ya hay token, manda al admin
+  // Si ya hay token válido, manda al admin
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
 
     if (token) {
       navigate("/admin");
@@ -39,9 +40,9 @@ const LoginPage = () => {
       // Llama al backend con usuario y contraseña
       const data = await loginUser(usuario, contrasena);
 
-      // Guarda token y usuario en localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // Guarda token y usuario con seguridad (sin espacios en blanco)
+      saveToken(data.token);
+      saveUser(data.user);
 
       // Redirige al admin si el login fue exitoso
       navigate("/admin");
@@ -60,8 +61,8 @@ const LoginPage = () => {
         <div className="bg-card rounded-xl shadow-lg p-8 w-full max-w-md">
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-2 mb-1">
-              <UtensilsCrossed className="w-6 h-6 text-primary" />
-              <h2 className="text-xl font-bold text-primary">Iniciar Sesión</h2>
+              <UtensilsCrossed className="w-6 h-6 text-black" />
+              <h2 className="text-xl font-bold text-black">Iniciar Sesión</h2>
             </div>
             <p className="text-sm text-muted-foreground">
               Sistema de Gestión de Restaurante
@@ -70,7 +71,7 @@ const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold mb-1">Usuario</label>
+              <label className="block text-sm font-semibold mb-1 text-black">Usuario</label>
               <input
                 type="text"
                 value={usuario}
@@ -80,7 +81,7 @@ const LoginPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-1">
+              <label className="block text-sm font-semibold mb-1 text-black">
                 Contraseña
               </label>
               <input
@@ -107,7 +108,7 @@ const LoginPage = () => {
           </form>
 
           <div className="mt-6 bg-muted rounded-lg p-4 text-sm">
-            <p className="font-semibold mb-1">Credenciales de prueba:</p>
+            <p className="font-semibold mb-1 text-black">Credenciales de prueba:</p>
             <p className="text-muted-foreground">Admin: admin / admin123</p>
             <p className="text-muted-foreground">Cocina: cocina / cocina123</p>
             <p className="text-muted-foreground">Mesero: mesero / mesero123</p>

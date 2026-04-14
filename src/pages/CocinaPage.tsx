@@ -83,7 +83,7 @@ const CocinaPage = () => {
             className="text-gray-400 hover:text-white transition text-sm"
           >← Volver</button>
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight">🍳 Pantalla de Cocina</h1>
+            <h1 className="text-2xl font-extrabold tracking-tight">Pantalla de Cocina</h1>
             <p className="text-gray-400 text-xs mt-0.5">Se actualiza automáticamente cada 15 segundos</p>
           </div>
         </div>
@@ -97,7 +97,7 @@ const CocinaPage = () => {
             <p className="text-xs text-gray-400">En proceso</p>
           </div>
           <button onClick={load} className="text-sm border border-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-800 transition">
-            🔄 Actualizar
+            Actualizar
           </button>
         </div>
       </div>
@@ -132,7 +132,6 @@ const CocinaPage = () => {
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-gray-500">
-            <p className="text-4xl mb-3">🍽️</p>
             <p>No hay órdenes en este momento</p>
           </div>
         ) : (
@@ -163,7 +162,7 @@ const CocinaPage = () => {
                   {/* Notas */}
                   {order.notes && (
                     <div className="px-4 py-2 bg-yellow-900/20 border-b border-yellow-900/30">
-                      <p className="text-xs text-yellow-400">📝 {order.notes}</p>
+                      <p className="text-xs text-yellow-400">{order.notes}</p>
                     </div>
                   )}
 

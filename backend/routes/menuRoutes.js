@@ -2,6 +2,7 @@ const express = require("express");
 const pool = require("../config/db");
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
+const defaultMenuItems = require("../data/defaultMenuItems");
 
 const router = express.Router();
 
@@ -15,8 +16,38 @@ router.get("/", async (req, res) => {
       SELECT * FROM menu_items
       ORDER BY category ASC, name ASC
     `);
+
+    if (result.rows.length === 0 && req.query.restore !== "false") {
+      await pool.query("BEGIN");
+      for (const item of defaultMenuItems) {
+        await pool.query(
+          `INSERT INTO menu_items (name, description, price, category, emoji, image_url, available)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [
+            item.name,
+            item.description,
+            item.price,
+            item.category,
+            item.emoji || "",
+            item.image_url,
+            item.available,
+          ]
+        );
+      }
+      await pool.query("COMMIT");
+
+      const restored = await pool.query(`
+        SELECT * FROM menu_items
+        ORDER BY category ASC, name ASC
+      `);
+      return res.json(restored.rows);
+    }
+
     res.json(result.rows);
   } catch (error) {
+    try {
+      await pool.query("ROLLBACK");
+    } catch (_) {}
     res.status(500).json({ message: "Error al obtener el menú", error: error.message });
   }
 });
@@ -59,7 +90,7 @@ router.post("/", authMiddleware, roleMiddleware("admin"), async (req, res) => {
       description || "",
       price,
       category || "General",
-      emoji || "🍽️",
+      emoji || "",
       image_url || "",
       available !== undefined ? available : true,
     ]);
