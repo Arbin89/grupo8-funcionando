@@ -31,7 +31,14 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/cocina" element={<CocinaPage />} />
+          <Route
+            path="/cocina"
+            element={
+              <ProtectedRoute>
+                <CocinaPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/" element={<Index />} />
           <Route path="/menu" element={<MenuPage />} />
           <Route path="/reservar" element={<CreateReservationPage />} />
