@@ -7,16 +7,29 @@ SIGER es una aplicación web full-stack para la gestión integral de un restaura
 ```
 grupo8-funcionando/
 ├── backend/                    # Servidor Node.js + Express
+│   ├── config/                 # Configuración de base de datos y otros
+│   ├── middlewares/            # Middlewares de la aplicación
 │   ├── routes/                 # Rutas API (usuarios, reservas, ia, etc.)
-│   ├── sql/                    # Esquemas de base de datos
-│   └── .env                    # Variables de entorno
+│   ├── sql/                    # Esquemas de base de datos SQL
+│   ├── .env                    # Variables de entorno (a crear por el usuario)
+│   ├── .env.example            # Ejemplo y plantilla de variables de entorno
+│   ├── index.js                # Punto de entrada del servidor
+│   └── seed.js                 # Script para generar usuarios y datos de prueba
 │
 ├── src/                        # Frontend React + TypeScript (Vite)
+│   ├── components/             # Componentes de UI reutilizables
+│   ├── hooks/                  # Custom hooks de React
+│   ├── lib/                    # Librerías y utilidades
 │   ├── pages/                  # Vistas principales y panel admin
-│   └── services/               # Conexión con el backend (API)
+│   ├── services/               # Conexión con el backend (API)
+│   ├── test/                   # Pruebas automatizadas
+│   ├── App.tsx                 # Componente principal de la aplicación
+│   └── main.tsx                # Punto de entrada de React
 │
 ├── docker-compose.yml          # Base de datos PostgreSQL en Docker
-└── package.json                # Dependencias del frontend
+├── package.json                # Dependencias del frontend
+├── tailwind.config.ts          # Configuración de Tailwind CSS
+└── vite.config.ts              # Configuración de Vite
 ```
 
 ---
@@ -39,17 +52,26 @@ cd ..
 ```
 
 ### 3. Configurar variables de entorno (IA incluida)
-Crea un archivo llamado `.env` dentro de la carpeta `backend/` con lo siguiente:
+Para que el proyecto funcione correctamente, es necesario configurar las claves de API de los servicios de IA y la base de datos.
+Entra en la carpeta `backend/` y crea una copia del archivo `.env.example` llamándola `.env` (o crea el archivo `backend/.env` manualmente):
+
+Contenido del archivo `.env` que debes crear:
 ```env
+GROQ_API_KEY=pon_tu_api_key_aqui
+OPENROUTER_API_KEY=pon_tu_api_key_aqui
+OPENROUTER_MODEL=meta-llama/llama-3.1-8b-instruct:free
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_NAME=grupo8
-JWT_SECRET=secreto_jwt
-GROQ_API_KEY=tu_api_key_de_groq
+JWT_SECRET=pon_un_secret_aqui
 ```
-> ⚠️ **Obligatorio para la IA:** Debes reemplazar `tu_api_key_de_groq` con una clave válida generada en la consola de Groq.
+
+> ⚠️ **Obligatorio para la autenticación y la IA:** Debes reemplazar lo siguiente con tus valores correctos:
+> - **GROQ_API_KEY**: Genera tu API key en la consola de Groq (https://console.groq.com/keys).
+> - **OPENROUTER_API_KEY**: Genera tu API key en OpenRouter (https://openrouter.ai/keys).
+> - **JWT_SECRET**: Inventa una frase o cadena segura que se encargará de firmar los tokens de los usuarios de forma segura (ej. `mi_secreto_seguro_2024`).
 
 ### 4. Levantar base de datos y cargar esquema
 En la raíz del proyecto, ejecuta:
