@@ -70,7 +70,10 @@ CREATE TABLE IF NOT EXISTS kitchen_order_items (
     id SERIAL PRIMARY KEY,
     kitchen_order_id INT NOT NULL REFERENCES kitchen_orders(id) ON DELETE CASCADE,
     item_name VARCHAR(100) NOT NULL,
+    item_emoji VARCHAR(10) DEFAULT '',
+    item_image_url TEXT DEFAULT '',
     quantity INT NOT NULL DEFAULT 1 CHECK (quantity > 0),
+    unit_price NUMERIC(10,2) NOT NULL DEFAULT 0 CHECK (unit_price >= 0),
     notes TEXT
 );
 
