@@ -2,6 +2,27 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
+let kitchenSchemaReady = false;
+
+const ensureKitchenOrderItemsColumns = async (db) => {
+    if (kitchenSchemaReady) return;
+
+    await db.query(
+        `ALTER TABLE kitchen_order_items
+         ADD COLUMN IF NOT EXISTS item_emoji VARCHAR(10) DEFAULT ''`
+    );
+    await db.query(
+        `ALTER TABLE kitchen_order_items
+         ADD COLUMN IF NOT EXISTS item_image_url TEXT DEFAULT ''`
+    );
+    await db.query(
+        `ALTER TABLE kitchen_order_items
+         ADD COLUMN IF NOT EXISTS unit_price NUMERIC(10,2) NOT NULL DEFAULT 0 CHECK (unit_price >= 0)`
+    );
+
+    kitchenSchemaReady = true;
+};
+
 // Genera número de orden único: ORD-XXXXXX
 const genOrderNumber = () => {
     const rand = Math.floor(100000 + Math.random() * 900000);
@@ -11,6 +32,8 @@ const genOrderNumber = () => {
 // ── GET /kitchen/orders ─ lista todas las órdenes con sus items (sin auth para la vista de cocina)
 router.get("/orders", async (req, res) => {
     try {
+        await ensureKitchenOrderItemsColumns(pool);
+
         const orders = await pool.query(
             `SELECT * FROM kitchen_orders ORDER BY created_at DESC`
         );
@@ -34,6 +57,8 @@ router.get("/orders", async (req, res) => {
 router.post("/orders", async (req, res) => {
     const client = await pool.connect();
     try {
+        await ensureKitchenOrderItemsColumns(client);
+
         const { items, notes, table_number } = req.body;
 
         if (!items || items.length === 0) {
