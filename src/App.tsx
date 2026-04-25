@@ -21,6 +21,7 @@ import ReportesPage from "./pages/ReportesPage";
 import ReportA from "./pages/admin/ReportA";
 import IAPage from "./pages/admin/IAPage";
 import IATestPage from "./pages/admin/IATestPage";
+import ThemeToggle from "./components/ThemeToggle";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <ThemeToggle />
       <BrowserRouter>
         <Routes>
           <Route
@@ -48,7 +50,7 @@ const App = () => (
           <Route
             path="/admin"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <AdminLayout />
               </ProtectedRoute>
             }

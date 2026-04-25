@@ -17,8 +17,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 224 30% 15%;
 
-    --primary: 245 58% 51%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 42 96% 52%;
+    --primary-foreground: 0 0% 7%;
 
     --secondary: 210 40% 96%;
     --secondary-foreground: 224 30% 15%;
@@ -26,8 +26,8 @@
     --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
 
-    --accent: 245 58% 51%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 42 96% 52%;
+    --accent-foreground: 0 0% 7%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -43,7 +43,7 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 245 58% 51%;
+    --ring: 42 96% 52%;
 
     --radius: 0.75rem;
 
@@ -52,8 +52,8 @@
     --sidebar-muted: 235 25% 30%;
     --sidebar-accent: 245 58% 51%;
 
-    --gradient-start: 245 58% 51%;
-    --gradient-end: 280 60% 55%;
+    --gradient-start: 46 91% 52%;
+    --gradient-end: 40 94% 58%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-primary: 240 5.9% 10%;
@@ -62,6 +62,30 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222 30% 8%;
+    --foreground: 210 20% 96%;
+
+    --card: 222 24% 10%;
+    --card-foreground: 210 20% 96%;
+
+    --popover: 222 24% 10%;
+    --popover-foreground: 210 20% 96%;
+
+    --secondary: 223 18% 14%;
+    --secondary-foreground: 210 20% 96%;
+
+    --muted: 223 18% 16%;
+    --muted-foreground: 215 14% 68%;
+
+    --accent: 30 95% 56%;
+    --accent-foreground: 0 0% 6%;
+
+    --border: 220 18% 20%;
+    --input: 220 18% 20%;
+    --ring: 30 95% 56%;
   }
 }
 
@@ -74,6 +98,58 @@
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
   }
+}
+
+body.theme-light {
+  background: radial-gradient(circle at top left, #fff4d6 0%, #fff9eb 32%, #ffffff 68%);
+  color: #0f172a;
+}
+
+body.theme-dark {
+  background: #0a0c10;
+  color: #f8fafc;
+}
+
+/* Admin dark surfaces become warm-light in light mode */
+body.theme-light [class*="bg-[#0a0c10"] {
+  background-color: #fff7e8 !important;
+}
+
+body.theme-light [class*="bg-[#0d0f14"] {
+  background-color: #fff4de !important;
+}
+
+body.theme-light [class*="bg-[#0e1014"] {
+  background-color: #fff4de !important;
+}
+
+body.theme-light [class*="bg-[#111318"] {
+  background-color: #fffef8 !important;
+}
+
+body.theme-light [class*="bg-[#0f1117"] {
+  background-color: #fffbf2 !important;
+}
+
+body.theme-light [class*="text-slate-100"],
+body.theme-light [class*="text-white"] {
+  color: #0f172a !important;
+}
+
+body.theme-light [class*="text-slate-500"] {
+  color: #475569 !important;
+}
+
+body.theme-light [class*="text-slate-600"] {
+  color: #64748b !important;
+}
+
+body.theme-light [class*="border-white/["] {
+  border-color: rgba(120, 53, 15, 0.16) !important;
+}
+
+body.theme-light [class*="bg-white/["] {
+  background-color: rgba(255, 255, 255, 0.78) !important;
 }
 
 /* Gradient navbar */

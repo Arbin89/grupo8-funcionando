@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus, CalendarDays, Users, Clock, X, Loader2, Pencil, Trash2 } from "lucide-react";
 import {
   getReservations,
   createReservation,
@@ -9,411 +9,220 @@ import {
   Reservation,
 } from "../../services/reservationService";
 
-const statusColors: Record<string, string> = {
-  confirmada: "bg-success/10 text-success",
-  pendiente: "bg-warning/10 text-warning",
-  cancelada: "bg-destructive/10 text-destructive",
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const inputCls =
+  "w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:border-orange-500/50 focus:outline-none focus:ring-1 focus:ring-orange-500/20 transition";
+
+const STATUS_META: Record<string, { label: string; cls: string; dot: string }> = {
+  confirmada: { label: "Confirmada", cls: "border-emerald-500/25 bg-emerald-500/10 text-emerald-400", dot: "bg-emerald-400" },
+  pendiente:  { label: "Pendiente",  cls: "border-amber-500/25 bg-amber-500/10 text-amber-300",    dot: "bg-amber-400"   },
+  cancelada:  { label: "Cancelada",  cls: "border-red-500/25 bg-red-500/10 text-red-400",           dot: "bg-red-400"     },
 };
 
+const formatDate = (d: string) => new Date(d).toLocaleDateString("es-DO");
+const formatTime = (t: string)  => t?.slice(0, 5);
+
+const emptyForm = () => ({
+  customer_name: "", email: "", phone: "", reservation_date: "",
+  reservation_time: "", people: 1, notes: "", status: "pendiente",
+});
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 const ReservationsPage = () => {
-  // Lista real de reservaciones obtenidas desde backend
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [filter, setFilter]             = useState("todas");
+  const [error, setError]               = useState("");
+  const [loading, setLoading]           = useState(true);
+  const [showForm, setShowForm]         = useState(false);
+  const [editingId, setEditingId]       = useState<number | null>(null);
+  const [deletingRes, setDeletingRes]   = useState<Reservation | null>(null);
+  const [saving, setSaving]             = useState(false);
+  const [form, setForm]                 = useState(emptyForm());
 
-  // Estado del filtro
-  const [filter, setFilter] = useState("todas");
-
-  // Error general
-  const [error, setError] = useState("");
-
-  // Indicador de carga
-  const [loading, setLoading] = useState(true);
-
-  // Mostrar u ocultar formulario
-  const [showForm, setShowForm] = useState(false);
-
-  // Indica si estamos editando
-  const [editingReservationId, setEditingReservationId] = useState<number | null>(null);
-
-  // Datos del formulario
-  const [formData, setFormData] = useState({
-    customer_name: "",
-    email: "",
-    phone: "",
-    reservation_date: "",
-    reservation_time: "",
-    people: 1,
-    notes: "",
-    status: "pendiente",
-  });
-
-  // Cargar reservaciones al abrir la página
   const fetchReservations = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const data = await getReservations();
-      setReservations(data);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al cargar reservaciones");
-    } finally {
-      setLoading(false);
-    }
+    try { setLoading(true); setError(""); setReservations(await getReservations()); }
+    catch (e) { setError(e instanceof Error ? e.message : "Error al cargar reservaciones"); }
+    finally { setLoading(false); }
   };
 
-  useEffect(() => {
-    fetchReservations();
-  }, []);
+  useEffect(() => { void fetchReservations(); }, []);
 
-  // Filtra por estado
-  const filtered =
-    filter === "todas"
-      ? reservations
-      : reservations.filter((r) => r.status === filter);
+  const filtered = filter === "todas" ? reservations : reservations.filter((r) => r.status === filter);
 
-  // Formatea fecha
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("es-DO");
-  };
+  const resetForm = () => { setForm(emptyForm()); setEditingId(null); setShowForm(false); };
 
-  // Formatea hora
-  const formatTime = (timeString: string) => {
-    return timeString?.slice(0, 5);
-  };
-
-  // Maneja cambios en inputs
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]: name === "people" ? Number(value) : value,
+  const handleEdit = (r: Reservation) => {
+    setEditingId(r.id);
+    setForm({
+      customer_name: r.customer_name, email: r.email || "", phone: r.phone || "",
+      reservation_date: r.reservation_date?.split("T")[0] || r.reservation_date,
+      reservation_time: r.reservation_time?.slice(0, 5) || r.reservation_time,
+      people: r.people, notes: r.notes || "", status: r.status,
     });
-  };
-
-  // Limpia el formulario
-  const resetForm = () => {
-    setFormData({
-      customer_name: "",
-      email: "",
-      phone: "",
-      reservation_date: "",
-      reservation_time: "",
-      people: 1,
-      notes: "",
-      status: "pendiente",
-    });
-    setEditingReservationId(null);
-    setShowForm(false);
-  };
-
-  // Carga datos de una reservación en el formulario para editar
-  const handleEdit = (reservation: Reservation) => {
-    setEditingReservationId(reservation.id);
     setShowForm(true);
-    setFormData({
-      customer_name: reservation.customer_name,
-      email: reservation.email || "",
-      phone: reservation.phone || "",
-      reservation_date: reservation.reservation_date?.split("T")[0] || reservation.reservation_date,
-      reservation_time: reservation.reservation_time?.slice(0, 5) || reservation.reservation_time,
-      people: reservation.people,
-      notes: reservation.notes || "",
-      status: reservation.status,
-    });
   };
 
-  // Crear o actualizar reservación
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+    e.preventDefault(); setSaving(true); setError("");
     try {
-      setError("");
-
-      if (editingReservationId) {
-        await updateReservation(editingReservationId, formData);
-      } else {
-        await createReservation(formData);
-      }
-
-      await fetchReservations();
-      resetForm();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al guardar la reservación");
-    }
+      editingId ? await updateReservation(editingId, form) : await createReservation(form);
+      await fetchReservations(); resetForm();
+    } catch (e) { setError(e instanceof Error ? e.message : "Error al guardar"); }
+    finally { setSaving(false); }
   };
 
-  // Eliminar reservación
-  const handleDelete = async (id: number) => {
-    const confirmDelete = window.confirm(
-      "¿Seguro que deseas eliminar esta reservación?"
-    );
-
-    if (!confirmDelete) return;
-
-    try {
-      setError("");
-      await deleteReservation(id);
-      await fetchReservations();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al eliminar la reservación");
-    }
+  const handleDelete = async () => {
+    if (!deletingRes) return;
+    try { await deleteReservation(deletingRes.id); setDeletingRes(null); await fetchReservations(); }
+    catch (e) { setError(e instanceof Error ? e.message : "Error al eliminar"); setDeletingRes(null); }
   };
+
+  const f = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    setForm({ ...form, [k]: k === "people" ? Number(e.target.value) : e.target.value });
+
+  const FILTERS = ["todas", "confirmada", "pendiente", "cancelada"];
 
   return (
-    <div className="space-y-6">
-      <Link
-        to="/admin"
-        className="inline-flex items-center gap-1 text-sm bg-primary text-primary-foreground px-4 py-1.5 rounded-full hover:opacity-90 transition"
-      >
-        <ArrowLeft className="w-4 h-4" /> Volver
-      </Link>
-
-      <div>
-        <h1 className="text-3xl font-bold">Gestión de Reservaciones</h1>
-        <p className="text-muted-foreground">
-          Administra todas las reservaciones del restaurante
-        </p>
+    <div className="relative min-h-screen bg-[#0a0c10] font-sans text-slate-100">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute left-[-8%] top-[-4%] h-[420px] w-[420px] rounded-full bg-sky-600/5 blur-[130px]" />
+        <div className="absolute right-[-4%] bottom-[10%] h-[360px] w-[360px] rounded-full bg-emerald-600/4 blur-[120px]" />
+        <div className="absolute inset-0 opacity-[0.022]" style={{ backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)", backgroundSize: "40px 40px" }} />
       </div>
 
-      {error && (
-        <div className="bg-destructive/10 border border-destructive text-destructive rounded-lg px-4 py-3 text-sm">
-          {error}
-        </div>
-      )}
+      <div className="relative z-10 mx-auto w-full max-w-[1400px] space-y-5 px-5 py-8 md:px-8">
 
-      <div className="bg-card rounded-xl shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold">Reservaciones Activas</h2>
+        <Link to="/admin" className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-200">
+          <ArrowLeft className="h-3.5 w-3.5" /> Volver al panel
+        </Link>
 
-          <button
-            onClick={() => {
-              resetForm();
-              setShowForm(true);
-            }}
-            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition"
-          >
-            Nueva Reservación
+        {/* Header */}
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-orange-400/70">Administración</p>
+            <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">Reservaciones</h1>
+            <p className="mt-1 text-sm text-slate-500">Administra agenda, estados y asignaciones de mesas.</p>
+          </div>
+          <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-black transition hover:bg-orange-400">
+            <Plus className="h-4 w-4" /> Nueva reservación
           </button>
         </div>
 
+        {error && <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</div>}
+
+        {/* Inline form */}
         {showForm && (
-          <form
-            onSubmit={handleSubmit}
-            className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 border rounded-xl p-4"
-          >
-            <div>
-              <label className="block text-sm font-medium mb-1">Nombre</label>
-              <input
-                type="text"
-                name="customer_name"
-                value={formData.customer_name}
-                onChange={handleChange}
-                required
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm"
-              />
+          <div className="rounded-2xl border border-white/[0.09] bg-[#111318] p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="font-black text-white">{editingId ? "Editar reservación" : "Nueva reservación"}</h3>
+              <button onClick={resetForm} className="rounded-lg border border-white/[0.08] p-1.5 text-slate-500 hover:text-slate-200 transition"><X className="h-4 w-4" /></button>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Correo</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Teléfono</label>
-              <input
-                type="text"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Fecha</label>
-              <input
-                type="date"
-                name="reservation_date"
-                value={formData.reservation_date}
-                onChange={handleChange}
-                required
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Hora</label>
-              <input
-                type="time"
-                name="reservation_time"
-                value={formData.reservation_time}
-                onChange={handleChange}
-                required
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Personas</label>
-              <input
-                type="number"
-                name="people"
-                min={1}
-                value={formData.people}
-                onChange={handleChange}
-                required
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Estado</label>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm"
-              >
-                <option value="pendiente">Pendiente</option>
-                <option value="confirmada">Confirmada</option>
-                <option value="cancelada">Cancelada</option>
-              </select>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-1">Notas</label>
-              <textarea
-                name="notes"
-                value={formData.notes}
-                onChange={handleChange}
-                rows={3}
-                className="w-full border border-input rounded-lg px-3 py-2 text-sm"
-              />
-            </div>
-
-            <div className="md:col-span-2 flex gap-3">
-              <button
-                type="submit"
-                className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition"
-              >
-                {editingReservationId ? "Actualizar Reservación" : "Guardar Reservación"}
-              </button>
-
-              <button
-                type="button"
-                onClick={resetForm}
-                className="border border-input px-4 py-2 rounded-lg text-sm font-medium hover:bg-muted transition"
-              >
-                Cancelar
-              </button>
-            </div>
-          </form>
+            <form onSubmit={(e) => void handleSubmit(e)} className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div><label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">Nombre *</label><input className={inputCls} value={form.customer_name} onChange={f("customer_name")} required /></div>
+              <div><label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">Correo</label><input type="email" className={inputCls} value={form.email} onChange={f("email")} /></div>
+              <div><label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">Teléfono</label><input className={inputCls} value={form.phone} onChange={f("phone")} /></div>
+              <div><label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">Fecha *</label><input type="date" className={inputCls} value={form.reservation_date} onChange={f("reservation_date")} required /></div>
+              <div><label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">Hora *</label><input type="time" className={inputCls} value={form.reservation_time} onChange={f("reservation_time")} required /></div>
+              <div><label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">Personas *</label><input type="number" min={1} className={inputCls} value={form.people} onChange={f("people")} required /></div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">Estado</label>
+                <select className={inputCls} value={form.status} onChange={f("status")}>
+                  <option value="pendiente">Pendiente</option>
+                  <option value="confirmada">Confirmada</option>
+                  <option value="cancelada">Cancelada</option>
+                </select>
+              </div>
+              <div className="md:col-span-2"><label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">Notas</label><textarea rows={2} className={inputCls} value={form.notes} onChange={f("notes")} /></div>
+              <div className="flex gap-2 md:col-span-2">
+                <button type="submit" disabled={saving} className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2 text-sm font-bold text-black transition hover:bg-orange-400 disabled:opacity-50">
+                  {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                  {saving ? "Guardando…" : editingId ? "Actualizar" : "Crear reservación"}
+                </button>
+                <button type="button" onClick={resetForm} className="rounded-xl border border-white/[0.08] px-4 py-2 text-sm text-slate-400 hover:bg-white/[0.05] transition">Cancelar</button>
+              </div>
+            </form>
+          </div>
         )}
 
-        <div className="flex gap-3 mb-6">
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="border border-input rounded-lg px-3 py-1.5 text-sm bg-background"
-          >
-            <option value="todas">Todas las reservaciones</option>
-            <option value="confirmada">Confirmadas</option>
-            <option value="pendiente">Pendientes</option>
-            <option value="cancelada">Canceladas</option>
-          </select>
+        {/* Filter tabs */}
+        <div className="flex flex-wrap gap-1.5">
+          {FILTERS.map((f) => (
+            <button key={f} onClick={() => setFilter(f)} className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition ${filter === f ? "bg-orange-500/15 text-orange-300 ring-1 ring-orange-500/30" : "text-slate-500 hover:bg-white/[0.05] hover:text-slate-300"}`}>
+              {f}
+            </button>
+          ))}
+          <span className="ml-auto self-center text-xs text-slate-600">{filtered.length} resultado{filtered.length !== 1 ? "s" : ""}</span>
         </div>
 
+        {/* Cards grid */}
         {loading ? (
-          <div className="py-6 text-sm text-muted-foreground">
-            Cargando reservaciones...
+          <div className="flex min-h-[260px] items-center justify-center gap-3 text-slate-500">
+            <Loader2 className="h-5 w-5 animate-spin text-orange-400" />
+            <span className="text-sm">Cargando reservaciones…</span>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex min-h-[200px] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/[0.07] text-slate-600">
+            <CalendarDays className="h-9 w-9" />
+            <p className="text-sm">No hay reservaciones para este filtro.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {filtered.map((r) => (
-              <div key={r.id} className="border rounded-xl p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-primary">#{r.id}</span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      statusColors[r.status] || "bg-muted text-foreground"
-                    }`}
-                  >
-                    {r.status.toUpperCase()}
-                  </span>
-                </div>
-
-                <p className="text-xs text-muted-foreground">
-                  {formatDate(r.reservation_date)}
-                </p>
-
-                <div className="space-y-1 text-sm">
-                  <div className="flex gap-2">
-                    <span className="text-muted-foreground w-16">Nombre</span>
-                    <span className="font-medium">{r.customer_name}</span>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <span className="text-muted-foreground w-16">Email</span>
-                    <span>{r.email}</span>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <span className="text-muted-foreground w-16">Teléfono</span>
-                    <span>{r.phone}</span>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <span className="text-muted-foreground w-16">Hora</span>
-                    <span>{formatTime(r.reservation_time)}</span>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <span className="text-muted-foreground w-16">Personas</span>
-                    <span>{r.people} personas</span>
-                  </div>
-
-                  {r.notes && (
-                    <div className="flex gap-2">
-                      <span className="text-muted-foreground w-16">Notas</span>
-                      <span>{r.notes}</span>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {filtered.map((r) => {
+              const st = STATUS_META[r.status] ?? STATUS_META.pendiente;
+              return (
+                <div key={r.id} className="rounded-2xl border border-white/[0.07] bg-[#111318] p-5 shadow-md shadow-black/30 transition hover:border-white/15">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-black text-white">{r.customer_name}</p>
+                      <p className="mt-0.5 font-mono text-xs text-slate-600">#{r.id}</p>
                     </div>
-                  )}
+                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${st.cls}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${st.dot}`} />
+                      {st.label}
+                    </span>
+                  </div>
+
+                  <div className="mt-3 space-y-1.5 text-sm">
+                    <div className="flex items-center gap-2 text-slate-400"><CalendarDays className="h-3.5 w-3.5" />{formatDate(r.reservation_date)}</div>
+                    <div className="flex items-center gap-2 text-slate-400"><Clock className="h-3.5 w-3.5" />{formatTime(r.reservation_time)}</div>
+                    <div className="flex items-center gap-2 text-slate-400"><Users className="h-3.5 w-3.5" />{r.people} personas</div>
+                    {r.email && <p className="text-slate-500 text-xs">{r.email}</p>}
+                    {r.notes && <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-xs text-amber-200/80">💬 {r.notes}</div>}
+                  </div>
+
+                  <div className="mt-4 flex gap-2 border-t border-white/[0.06] pt-3.5">
+                    <button onClick={() => handleEdit(r)} className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04] py-2 text-xs font-semibold text-slate-400 transition hover:border-orange-500/30 hover:text-orange-300">
+                      <Pencil className="h-3.5 w-3.5" /> Editar
+                    </button>
+                    <button onClick={() => setDeletingRes(r)} className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.04] py-2 text-xs font-semibold text-slate-400 transition hover:border-red-500/30 hover:text-red-400">
+                      <Trash2 className="h-3.5 w-3.5" /> Eliminar
+                    </button>
+                  </div>
                 </div>
-
-                <div className="flex gap-2 pt-2">
-                  <button
-                    onClick={() => handleEdit(r)}
-                    className="flex-1 text-xs border border-primary text-primary px-3 py-1.5 rounded-md hover:bg-primary hover:text-primary-foreground transition"
-                  >
-                    Editar
-                  </button>
-
-                  <button
-                    onClick={() => handleDelete(r.id)}
-                    className="flex-1 text-xs border border-destructive text-destructive px-3 py-1.5 rounded-md hover:bg-destructive hover:text-destructive-foreground transition"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </div>
-            ))}
-
-            {filtered.length === 0 && !loading && (
-              <div className="col-span-full text-center text-muted-foreground py-6">
-                No hay reservaciones para mostrar.
-              </div>
-            )}
+              );
+            })}
           </div>
         )}
       </div>
+
+      {/* Delete modal */}
+      {deletingRes && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-2xl border border-red-500/20 bg-[#13151c] p-6 shadow-2xl">
+            <div className="mb-1 flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10"><Trash2 className="h-4 w-4 text-red-400" /></div>
+              <h3 className="text-base font-black text-white">Eliminar reservación</h3>
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-slate-400">¿Seguro que deseas eliminar la reservación de <span className="font-semibold text-white">{deletingRes.customer_name}</span>?</p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button onClick={() => setDeletingRes(null)} className="rounded-xl border border-white/[0.08] px-4 py-2 text-sm text-slate-400 transition hover:bg-white/[0.05]">Cancelar</button>
+              <button onClick={() => void handleDelete()} className="rounded-xl bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-400">Sí, eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

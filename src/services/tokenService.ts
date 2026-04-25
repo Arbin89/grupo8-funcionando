@@ -13,8 +13,11 @@ export const decodeToken = (token: string): TokenPayload | null => {
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
-    
-    const decoded = JSON.parse(atob(parts[1]));
+
+    // JWT payload uses base64url; normalize to standard base64 for atob.
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=');
+    const decoded = JSON.parse(atob(padded));
     return decoded;
   } catch (error) {
     return null;
@@ -67,6 +70,19 @@ export const clearToken = (): void => {
 export const getUser = () => {
   const user = localStorage.getItem("user");
   return user ? JSON.parse(user) : null;
+};
+
+// Obtiene el rol actual priorizando el token (fuente más confiable en cliente).
+export const getUserRole = (): string | null => {
+  const token = getToken();
+  const decoded = token ? decodeToken(token) : null;
+
+  if (decoded?.role) {
+    return decoded.role.toLowerCase();
+  }
+
+  const user = getUser();
+  return user?.role ? String(user.role).toLowerCase() : null;
 };
 
 // Guarda datos del usuario en localStorage

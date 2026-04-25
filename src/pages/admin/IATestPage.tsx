@@ -1,22 +1,23 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, Beaker, Loader2, MessageSquareText, Sparkles, TerminalSquare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { apiRequest } from "@/services/api";
 
-// Elimina símbolos markdown del texto
 function cleanMarkdown(raw: string): string {
   return raw
-    .replace(/^#{1,6}\s+/gm, "")        // ### títulos
-    .replace(/\*\*(.+?)\*\*/g, "$1")    // **negrita**
-    .replace(/\*(.+?)\*/g, "$1")        // *cursiva*
-    .replace(/__(.+?)__/g, "$1")        // __negrita__
-    .replace(/_(.+?)_/g, "$1");         // _cursiva_
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/\*(.+?)\*/g, "$1")
+    .replace(/__(.+?)__/g, "$1")
+    .replace(/_(.+?)_/g, "$1");
 }
 
-// Renderiza texto plano con soporte de listas
 function FormattedText({ text }: { text: string }) {
   if (!text) return null;
+
   const cleaned = cleanMarkdown(text);
   const lines = cleaned.split("\n");
   const elements: React.ReactNode[] = [];
@@ -26,9 +27,11 @@ function FormattedText({ text }: { text: string }) {
   const flushList = () => {
     if (listItems.length > 0) {
       elements.push(
-        <ul key={`list-${listKey++}`} className="list-disc list-inside space-y-1 my-2 pl-2">
+        <ul key={`list-${listKey++}`} className="my-2 list-inside list-disc space-y-1 pl-2">
           {listItems.map((item, i) => (
-            <li key={i} className="text-sm leading-relaxed">{item}</li>
+            <li key={i} className="text-sm leading-relaxed text-slate-300">
+              {item}
+            </li>
           ))}
         </ul>
       );
@@ -39,52 +42,56 @@ function FormattedText({ text }: { text: string }) {
   lines.forEach((line, idx) => {
     const trimmed = line.trim();
     const listMatch = trimmed.match(/^[-•]\s+(.+)/) ?? trimmed.match(/^\d+\.\s+(.+)/);
+
     if (listMatch) {
       listItems.push(listMatch[1]);
+      return;
+    }
+
+    flushList();
+
+    if (trimmed) {
+      elements.push(
+        <p key={idx} className="text-sm leading-relaxed text-slate-300">
+          {trimmed}
+        </p>
+      );
     } else {
-      flushList();
-      if (trimmed) {
-        elements.push(
-          <p key={idx} className="text-sm leading-relaxed">{trimmed}</p>
-        );
-      } else {
-        elements.push(<div key={`gap-${idx}`} className="h-1" />);
-      }
+      elements.push(<div key={`gap-${idx}`} className="h-1" />);
     }
   });
+
   flushList();
 
   return <div className="space-y-1">{elements}</div>;
 }
 
+const inputCls =
+  "h-10 border-white/[0.08] bg-white/[0.04] text-slate-100 placeholder:text-slate-600";
+
 export default function IATestPage() {
-  // Test 1 — Reporte Diario
   const [reporteRes, setReporteRes] = useState<any>(null);
   const [reporteLoading, setReporteLoading] = useState(false);
   const [reporteError, setReporteError] = useState("");
 
-  // Test 2 — Alertas Inventario
   const [alertasRes, setAlertasRes] = useState<any>(null);
   const [alertasLoading, setAlertasLoading] = useState(false);
   const [alertasError, setAlertasError] = useState("");
 
-  // Test 3 — Sugerencias Menú
   const [sugerenciasRes, setSugerenciasRes] = useState<any>(null);
   const [sugerenciasLoading, setSugerenciasLoading] = useState(false);
   const [sugerenciasError, setSugerenciasError] = useState("");
 
-  // Test 4 — Chat
   const [chatInput, setChatInput] = useState("");
   const [chatRes, setChatRes] = useState<any>(null);
   const [chatLoading, setChatLoading] = useState(false);
   const [chatError, setChatError] = useState("");
 
-  // Test 5 — Resumen Día
   const [resumenFecha, setResumenFecha] = useState(new Date().toISOString().split("T")[0]);
   const [resumenProcesados, setResumenProcesados] = useState("10");
   const [resumenCompletados, setResumenCompletados] = useState("8");
   const [resumenPendientes, setResumenPendientes] = useState("2");
-  const [resumenObservacion, setResumenObservacion] = useState("Operación sin incidentes");
+  const [resumenObservacion, setResumenObservacion] = useState("Operacion sin incidentes");
   const [resumenRes, setResumenRes] = useState<any>(null);
   const [resumenLoading, setResumenLoading] = useState(false);
   const [resumenError, setResumenError] = useState("");
@@ -168,150 +175,205 @@ export default function IATestPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Test de Endpoints IA</h1>
-      <p className="text-muted-foreground text-sm">
-        Verifica que cada endpoint de la IA responde correctamente.
-      </p>
+    <div className="relative min-h-screen bg-[#0a0c10] font-sans text-slate-100">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute left-[-8%] top-[-4%] h-[430px] w-[430px] rounded-full bg-orange-600/6 blur-[130px]" />
+        <div className="absolute right-[-4%] top-[24%] h-[360px] w-[360px] rounded-full bg-sky-600/5 blur-[120px]" />
+        <div className="absolute bottom-[6%] left-[42%] h-[310px] w-[310px] rounded-full bg-emerald-600/4 blur-[120px]" />
+        <div
+          className="absolute inset-0 opacity-[0.022]"
+          style={{
+            backgroundImage:
+              "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+      </div>
 
-      {/* Sección 1 — Reporte Diario */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Test: Reporte Diario</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Button onClick={testReporte} disabled={reporteLoading} size="sm">
-            {reporteLoading ? "Probando..." : "Probar reporte"}
-          </Button>
-          {reporteError && <p className="text-red-500 text-sm">{reporteError}</p>}
-          {reporteRes && (
-            <div className="bg-muted p-4 rounded max-h-64 overflow-y-auto">
-              <FormattedText text={reporteRes.reporte ?? JSON.stringify(reporteRes, null, 2)} />
+      <div className="relative z-10 mx-auto w-full max-w-[1400px] space-y-5 px-5 py-8 md:px-8">
+        <Link
+          to="/admin"
+          className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-slate-400 transition hover:bg-white/[0.06] hover:text-slate-200"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> Volver al panel
+        </Link>
+
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-orange-400/70">
+              Inteligencia Artificial
+            </p>
+            <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">
+              Test de Endpoints IA
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Validacion funcional de cada endpoint con respuestas de prueba.
+            </p>
+          </div>
+          <div className="flex items-center gap-2.5 rounded-xl border border-orange-500/20 bg-orange-500/10 px-3.5 py-2 text-sm font-semibold text-orange-300">
+            <Beaker className="h-4 w-4" />
+            Entorno de pruebas
+          </div>
+        </div>
+
+        {(reporteError || alertasError || sugerenciasError || chatError || resumenError) && (
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            {reporteError || alertasError || sugerenciasError || chatError || resumenError}
+          </div>
+        )}
+
+        <div className="grid gap-4 xl:grid-cols-2">
+          <Card className="border-white/[0.07] bg-[#111318] text-slate-100">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm font-bold">
+                <Sparkles className="h-4 w-4 text-orange-400" /> Test: Reporte Diario
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button onClick={() => void testReporte()} disabled={reporteLoading} className="bg-orange-500 text-black hover:bg-orange-400">
+                {reporteLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Probando...
+                  </>
+                ) : (
+                  "Probar reporte"
+                )}
+              </Button>
+              {reporteRes && (
+                <div className="max-h-64 overflow-y-auto rounded-lg border border-white/[0.08] bg-[#0f1117] p-4">
+                  <FormattedText text={reporteRes.reporte ?? JSON.stringify(reporteRes, null, 2)} />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-white/[0.07] bg-[#111318] text-slate-100">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm font-bold">
+                <TerminalSquare className="h-4 w-4 text-orange-400" /> Test: Alertas Inventario
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button onClick={() => void testAlertas()} disabled={alertasLoading} className="bg-orange-500 text-black hover:bg-orange-400">
+                {alertasLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Probando...
+                  </>
+                ) : (
+                  "Probar alertas"
+                )}
+              </Button>
+              {alertasRes && (
+                <div className="max-h-64 overflow-y-auto rounded-lg border border-white/[0.08] bg-[#0f1117] p-4">
+                  <FormattedText text={alertasRes.alertas ?? JSON.stringify(alertasRes, null, 2)} />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-white/[0.07] bg-[#111318] text-slate-100">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm font-bold">
+                <Sparkles className="h-4 w-4 text-orange-400" /> Test: Sugerencias Menu
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button onClick={() => void testSugerencias()} disabled={sugerenciasLoading} className="bg-orange-500 text-black hover:bg-orange-400">
+                {sugerenciasLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Probando...
+                  </>
+                ) : (
+                  "Probar sugerencias"
+                )}
+              </Button>
+              {sugerenciasRes && (
+                <div className="max-h-64 overflow-y-auto rounded-lg border border-white/[0.08] bg-[#0f1117] p-4">
+                  <FormattedText text={sugerenciasRes.sugerencias ?? JSON.stringify(sugerenciasRes, null, 2)} />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-white/[0.07] bg-[#111318] text-slate-100">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm font-bold">
+                <MessageSquareText className="h-4 w-4 text-orange-400" /> Test: Chat
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Escribe un mensaje de prueba..."
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  className={inputCls}
+                />
+                <Button onClick={() => void testChat()} disabled={chatLoading || !chatInput.trim()} className="bg-orange-500 text-black hover:bg-orange-400">
+                  {chatLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...
+                    </>
+                  ) : (
+                    "Enviar"
+                  )}
+                </Button>
+              </div>
+              {chatRes && (
+                <div className="max-h-64 overflow-y-auto rounded-lg border border-white/[0.08] bg-[#0f1117] p-4">
+                  <FormattedText text={chatRes.respuesta ?? JSON.stringify(chatRes, null, 2)} />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="border-white/[0.07] bg-[#111318] text-slate-100">
+          <CardHeader>
+            <CardTitle className="text-sm font-bold">Test: Resumen Dia</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Fecha</label>
+                <Input value={resumenFecha} onChange={(e) => setResumenFecha(e.target.value)} className={inputCls} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Registros procesados</label>
+                <Input type="number" value={resumenProcesados} onChange={(e) => setResumenProcesados(e.target.value)} className={inputCls} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Completados</label>
+                <Input type="number" value={resumenCompletados} onChange={(e) => setResumenCompletados(e.target.value)} className={inputCls} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Pendientes</label>
+                <Input type="number" value={resumenPendientes} onChange={(e) => setResumenPendientes(e.target.value)} className={inputCls} />
+              </div>
+              <div className="space-y-1 md:col-span-2 lg:col-span-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">Observacion</label>
+                <Input value={resumenObservacion} onChange={(e) => setResumenObservacion(e.target.value)} className={inputCls} />
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
 
-      {/* Sección 2 — Alertas Inventario */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Test: Alertas Inventario</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Button onClick={testAlertas} disabled={alertasLoading} size="sm">
-            {alertasLoading ? "Probando..." : "Probar alertas"}
-          </Button>
-          {alertasError && <p className="text-red-500 text-sm">{alertasError}</p>}
-          {alertasRes && (
-            <div className="bg-muted p-4 rounded max-h-64 overflow-y-auto">
-              <FormattedText text={alertasRes.alertas ?? JSON.stringify(alertasRes, null, 2)} />
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Sección 3 — Sugerencias Menú */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Test: Sugerencias Menú</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Button onClick={testSugerencias} disabled={sugerenciasLoading} size="sm">
-            {sugerenciasLoading ? "Probando..." : "Probar sugerencias"}
-          </Button>
-          {sugerenciasError && <p className="text-red-500 text-sm">{sugerenciasError}</p>}
-          {sugerenciasRes && (
-            <div className="bg-muted p-4 rounded max-h-64 overflow-y-auto">
-              <FormattedText text={sugerenciasRes.sugerencias ?? JSON.stringify(sugerenciasRes, null, 2)} />
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Sección 4 — Chat */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Test: Chat</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Escribe un mensaje de prueba..."
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              className="flex-1"
-            />
-            <Button onClick={testChat} disabled={chatLoading || !chatInput.trim()} size="sm">
-              {chatLoading ? "Enviando..." : "Enviar"}
+            <Button onClick={() => void testResumen()} disabled={resumenLoading} className="bg-orange-500 text-black hover:bg-orange-400">
+              {resumenLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Probando...
+                </>
+              ) : (
+                "Probar resumen"
+              )}
             </Button>
-          </div>
-          {chatError && <p className="text-red-500 text-sm">{chatError}</p>}
-          {chatRes && (
-            <div className="bg-muted p-4 rounded max-h-64 overflow-y-auto">
-              <FormattedText text={chatRes.respuesta ?? JSON.stringify(chatRes, null, 2)} />
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
-      {/* Sección 5 — Resumen Día */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Test: Resumen Día</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">Fecha</label>
-              <Input
-                value={resumenFecha}
-                onChange={(e) => setResumenFecha(e.target.value)}
-                placeholder="YYYY-MM-DD"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">Registros Procesados</label>
-              <Input
-                type="number"
-                value={resumenProcesados}
-                onChange={(e) => setResumenProcesados(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">Completados</label>
-              <Input
-                type="number"
-                value={resumenCompletados}
-                onChange={(e) => setResumenCompletados(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-xs text-muted-foreground">Pendientes</label>
-              <Input
-                type="number"
-                value={resumenPendientes}
-                onChange={(e) => setResumenPendientes(e.target.value)}
-              />
-            </div>
-            <div className="col-span-2 space-y-1">
-              <label className="text-xs text-muted-foreground">Observación Clave</label>
-              <Input
-                value={resumenObservacion}
-                onChange={(e) => setResumenObservacion(e.target.value)}
-              />
-            </div>
-          </div>
-          <Button onClick={testResumen} disabled={resumenLoading} size="sm">
-            {resumenLoading ? "Probando..." : "Probar resumen"}
-          </Button>
-          {resumenError && <p className="text-red-500 text-sm">{resumenError}</p>}
-          {resumenRes && (
-            <div className="bg-muted p-4 rounded max-h-64 overflow-y-auto">
-              <FormattedText text={resumenRes.resumen ?? JSON.stringify(resumenRes, null, 2)} />
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            {resumenRes && (
+              <div className="max-h-64 overflow-y-auto rounded-lg border border-white/[0.08] bg-[#0f1117] p-4">
+                <FormattedText text={resumenRes.resumen ?? JSON.stringify(resumenRes, null, 2)} />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
