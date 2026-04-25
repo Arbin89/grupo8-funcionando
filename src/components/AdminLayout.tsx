@@ -1,18 +1,8 @@
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import AdminSidebar from "./AdminSidebar";
-import { LogOut } from "lucide-react";
 
 const AdminLayout = () => {
-  const navigate = useNavigate();
-
-  // Cierra sesión borrando datos guardados
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />

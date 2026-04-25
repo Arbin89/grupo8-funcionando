@@ -7,7 +7,7 @@
 @layer base {
   :root {
     --background: 220 20% 97%;
-    --foreground: 38, 92%, 50%;
+    --foreground: 224 30% 15%;
     --texthomecolor: 0 0% 0%;
     --bgreservabtn: 218 84% 50%;
 
@@ -63,6 +63,54 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  .dark {
+    --background: 224 30% 8%;
+    --foreground: 0 0% 96%;
+    --texthomecolor: 0 0% 96%;
+
+    --card: 224 28% 12%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 224 28% 12%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 46 91% 52%;
+    --primary-foreground: 224 30% 8%;
+
+    --secondary: 224 24% 16%;
+    --secondary-foreground: 0 0% 96%;
+
+    --muted: 224 24% 16%;
+    --muted-foreground: 220 14% 68%;
+
+    --accent: 46 91% 52%;
+    --accent-foreground: 224 30% 8%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 224 30% 8%;
+
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 224 24% 20%;
+    --input: 224 24% 20%;
+    --ring: 46 91% 52%;
+
+    --sidebar-background: 235 35% 12%;
+    --sidebar-primary: 0 0% 96%;
+    --sidebar-primary-foreground: 224 30% 8%;
+    --sidebar-accent: 235 25% 18%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 235 25% 18%;
+    --sidebar-ring: 46 91% 52%;
+  }
 }
 
 @layer base {
@@ -73,6 +121,7 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 }
 
@@ -81,9 +130,48 @@
   background: linear-gradient(135deg, hsl(46, 91%, 52%), hsl(44, 92%, 58%));
 }
 
+.dark .navbar-gradient {
+  background: linear-gradient(135deg, hsl(224, 30%, 10%), hsl(224, 26%, 16%));
+}
+
 /* Admin sidebar */
 .admin-sidebar {
   background: linear-gradient(180deg, hsl(235, 35%, 22%), hsl(245, 40%, 18%));
+}
+
+.dark .admin-sidebar {
+  background: linear-gradient(180deg, hsl(235, 35%, 12%), hsl(245, 40%, 8%));
+}
+
+.dark .text-black,
+.dark .text-black\/75,
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700 {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .text-gray-600,
+.dark .text-gray-500,
+.dark .text-gray-400,
+.dark .text-gray-300 {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.dark .bg-white,
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background-color: hsl(var(--card)) !important;
+}
+
+.dark .bg-gray-200 {
+  background-color: hsl(var(--secondary)) !important;
+}
+
+.dark .border-white,
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: hsl(var(--border)) !important;
 }
 
 /* Stock progress bars */

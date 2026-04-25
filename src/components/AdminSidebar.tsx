@@ -56,8 +56,8 @@ const AdminSidebar = () => {
   };
 
   return (
-    <aside className="admin-sidebar w-[180px] min-h-screen flex flex-col text-primary-foreground">
-      <div className="p-4 flex items-center gap-2 font-bold text-lg border-b border-primary-foreground/10">
+    <aside className="admin-sidebar w-[180px] min-h-screen flex flex-col text-sidebar-foreground">
+      <div className="p-4 flex items-center gap-2 font-bold text-lg border-b border-sidebar-foreground/10">
         <UtensilsCrossed className="w-5 h-5" />
         SIGER Admin
       </div>
@@ -65,7 +65,7 @@ const AdminSidebar = () => {
       <div className="flex-1 py-4">
         {sidebarSections.map((section) => (
           <div key={section.title} className="mb-4">
-            <p className="px-4 text-[10px] font-semibold tracking-wider text-primary-foreground/40 mb-2">
+            <p className="px-4 text-[10px] font-semibold tracking-wider text-sidebar-foreground/40 mb-2">
               {section.title}
             </p>
             {section.items.map((item) => {
@@ -75,8 +75,8 @@ const AdminSidebar = () => {
                   key={item.path}
                   to={item.path}
                   className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${isActive
-                      ? "text-primary-foreground bg-primary-foreground/10 border-l-2 border-primary-foreground"
-                      : "text-primary-foreground/60 hover:text-primary-foreground hover:bg-primary-foreground/5"
+                      ? "text-sidebar-foreground bg-sidebar-accent/20 border-l-2 border-sidebar-foreground"
+                      : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-foreground/5"
                     }`}
                 >
                   <item.icon className="w-4 h-4" />
@@ -88,13 +88,13 @@ const AdminSidebar = () => {
         ))}
       </div>
 
-      <div className="p-4 border-t border-primary-foreground/10">
+      <div className="p-4 border-t border-sidebar-foreground/10">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-xs font-bold">
             A
           </div>
           <div>
-            <p className="text-xs text-primary-foreground/50">Administrador</p>
+            <p className="text-xs text-sidebar-foreground/50">Administrador</p>
             <p className="text-sm font-medium">Admin</p>
           </div>
         </div>
