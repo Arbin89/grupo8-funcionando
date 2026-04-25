@@ -21,13 +21,7 @@ const AdminLayout = () => {
           Bienvenido, Administrador Sistema
         </span>
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1 text-sm text-destructive border border-destructive px-3 py-1 rounded-md hover:bg-destructive hover:text-destructive-foreground transition"
-        >
-          <LogOut className="w-3 h-3" />
-          Cerrar sesión
-        </button>
+ 
       </div>
 
       <div className="flex flex-1">

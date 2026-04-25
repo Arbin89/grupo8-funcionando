@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { clearSession } from "../services/tokenService";
 import {
   LayoutDashboard,
   Users,
@@ -47,6 +48,12 @@ const sidebarSections = [
 
 const AdminSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    clearSession();
+    navigate("/login");
+  };
 
   return (
     <aside className="admin-sidebar w-[180px] min-h-screen flex flex-col text-primary-foreground">
@@ -91,13 +98,13 @@ const AdminSidebar = () => {
             <p className="text-sm font-medium">Admin</p>
           </div>
         </div>
-        <Link
-          to="/"
+        <button
+          onClick={handleLogout}
           className="flex items-center justify-center gap-2 w-full bg-destructive text-destructive-foreground text-sm py-2 rounded-lg font-medium hover:opacity-90 transition"
         >
           <LogOut className="w-4 h-4" />
           Cerrar Sesión
-        </Link>
+        </button>
       </div>
     </aside>
   );

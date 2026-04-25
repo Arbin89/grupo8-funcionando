@@ -145,7 +145,7 @@ const Index = () => {
                 <div className="space-y-12">
                   <div className="flex gap-6">
                     <div className="flex-shrink-0 mt-1">
-                      <MapPin className="w-5 h-5 text-yellow-400" />
+                      <MapPin className="w-5 h-5 text-black" />
                     </div>
                     <div>
                       <h3 className="font-serif text-lg mb-2">Dirección</h3>
@@ -156,7 +156,7 @@ const Index = () => {
 
                   <div className="flex gap-6">
                     <div className="flex-shrink-0 mt-1">
-                      <Phone className="w-5 h-5 text-yellow-400" />
+                      <Phone className="w-5 h-5 text-black" />
                     </div>
                     <div>
                       <h3 className="font-serif text-lg mb-2">Teléfono</h3>
@@ -166,7 +166,7 @@ const Index = () => {
 
                   <div className="flex gap-6">
                     <div className="flex-shrink-0 mt-1">
-                      <Clock className="w-5 h-5 text-yellow-400" />
+                      <Clock className="w-5 h-5 text-black" />
                     </div>
                     <div>
                       <h3 className="font-serif text-lg mb-2">Horario</h3>
@@ -177,7 +177,7 @@ const Index = () => {
 
                   <div className="flex gap-6">
                     <div className="flex-shrink-0 mt-1">
-                      <Mail className="w-5 h-5 text-yellow-400" />
+                      <Mail className="w-5 h-5 text-black" />
                     </div>
                     <div>
                       <h3 className="font-serif text-lg mb-2">Email</h3>
@@ -203,7 +203,7 @@ const Index = () => {
                     </Link>
                     <Link
                       to="/menu"
-                      className="block border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black px-8 py-4 font-light text-lg transition text-center uppercase tracking-widest"
+                      className="block border border-yellow-400 text-white hover:bg-white hover:text-black px-8 py-4 font-light text-lg transition text-center uppercase tracking-widest"
                     >
                       Ver Menú
                     </Link>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getOrders, updateOrderStatus, KitchenOrder } from "../services/kitchenService";
 
 const STATUS_CONFIG = {
-  pendiente: { label: "Pendiente", color: "bg-yellow-100 text-yellow-800 border-yellow-300", dot: "bg-yellow-400" },
+  pendiente: { label: "Pendiente", color: "bg-yellow-100 text-black border-yellow-300", dot: "bg-yellow-400" },
   en_proceso: { label: "En proceso", color: "bg-blue-100 text-blue-800 border-blue-300", dot: "bg-blue-500" },
   lista: { label: "Lista ✓", color: "bg-green-100 text-green-800 border-green-300", dot: "bg-green-500" },
   entregada: { label: "Entregada", color: "bg-gray-100 text-gray-600 border-gray-300", dot: "bg-gray-400" },
@@ -89,7 +89,7 @@ const CocinaPage = () => {
         </div>
         <div className="flex gap-4">
           <div className="text-center">
-            <p className="text-3xl font-extrabold text-yellow-400">{pendingCount}</p>
+            <p className="text-3xl font-extrabold text-black">{pendingCount}</p>
             <p className="text-xs text-gray-400">Pendientes</p>
           </div>
           <div className="text-center">
@@ -162,7 +162,7 @@ const CocinaPage = () => {
                   {/* Notas */}
                   {order.notes && (
                     <div className="px-4 py-2 bg-yellow-900/20 border-b border-yellow-900/30">
-                      <p className="text-xs text-yellow-400">{order.notes}</p>
+                      <p className="text-xs text-black">{order.notes}</p>
                     </div>
                   )}
 

@@ -69,8 +69,10 @@ JWT_SECRET=pon_un_secret_aqui
 ```
 
 > ⚠️ **Obligatorio para la autenticación y la IA:** Debes reemplazar lo siguiente con tus valores correctos:
-> - **GROQ_API_KEY**: Genera tu API key en la consola de Groq (https://console.groq.com/keys).
-> - **OPENROUTER_API_KEY**: Genera tu API key en OpenRouter (https://openrouter.ai/keys).
+> - **GROQ_API_KEY** o **OPENROUTER_API_KEY**: Debes configurar al menos una de estas dos claves para usar el módulo de IA.
+>   - **GROQ_API_KEY**: Genera tu API key en la consola de Groq (https://console.groq.com/keys).
+>   - **OPENROUTER_API_KEY**: Genera tu API key en OpenRouter (https://openrouter.ai/keys).
+> - Si configuras ambas, el backend usará primero GROQ y, si no está disponible, OpenRouter.
 > - **JWT_SECRET**: Inventa una frase o cadena segura que se encargará de firmar los tokens de los usuarios de forma segura (ej. `mi_secreto_seguro_2024`).
 
 ### 4. Levantar base de datos y cargar esquema
